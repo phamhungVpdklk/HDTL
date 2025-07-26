@@ -1,6 +1,0 @@
-# dependencies
-node_modules
-# local env
-.env
-# build output
-frontend/build
