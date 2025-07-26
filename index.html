@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Công cụ Tính phí Dịch vụ</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container" id="main-container">
+        <h1>📝 Công Cụ Tính Phí Dịch Vụ Đo Đạc</h1>
+        
+        <div class="card">
+            <h4>1. Chọn Khu vực Làm việc</h4>
+            <div class="form-group">
+                <label for="commune-select">Chọn Xã/Phường:</label>
+                <select id="commune-select"></select>
+            </div>
+        </div>
+
+        <div class="card">
+            <h4>2. Thông tin Khách hàng (Bên A)</h4>
+            <div class="form-group-row">
+                <div class="form-group">
+                    <label for="client-name">Họ và tên:</label>
+                    <input type="text" id="client-name" value="Điểu Dương">
+                </div>
+                <div class="form-group">
+                    <label for="client-phone">Số điện thoại:</label>
+                    <input type="text" id="client-phone">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="client-address">Địa chỉ:</label>
+                <input type="text" id="client-address" value="Phường Bảo Vinh, thành phố Long Khánh, tỉnh Đồng Nai">
+            </div>
+        </div>
+        
+        <div class="card">
+            <h4>3. Thông tin Hợp đồng</h4>
+            <div class="form-group-row">
+                <div class="form-group">
+                    <label for="contract-full-number">Số hợp đồng gốc:</label>
+                    <input type="text" id="contract-full-number">
+                </div>
+                <div class="form-group">
+                    <label for="contract-date">Ngày ký hợp đồng gốc:</label>
+                    <input type="text" id="contract-date" placeholder="DD/MM/YYYY">
+                </div>
+            </div>
+            <div class="form-group-row">
+                <div class="form-group">
+                    <label for="liquidation-full-number">Số thanh lý:</label>
+                    <input type="text" id="liquidation-full-number">
+                </div>
+                <div class="form-group">
+                    <label for="liquidation-date">Ngày thanh lý:</label>
+                    <input type="text" id="liquidation-date" placeholder="DD/MM/YYYY">
+                </div>
+            </div>
+        </div>
+
+        <form id="invoice-form">
+            <div class="card">
+                <h4>4. Các dịch vụ thực hiện</h4>
+                <div class="controls">
+                    <button id="add-parcel-btn" type="button">Thêm Hồ sơ Thửa đất</button>
+                </div>
+                <div id="invoice-items">
+                    <p class="empty-state">Chưa có hồ sơ thửa đất nào được thêm.</p>
+                </div>
+            </div>
+            
+            <div class="card">
+                 <h4>5. Các hạng mục cố định</h4>
+                <div class="fixed-services-container">
+                    <div class="input-group">
+                        <label for="photo-qty">Số tờ Phôtô:</label>
+                        <input type="number" id="photo-qty" value="5" min="0">
+                    </div>
+                    <div class="input-group">
+                        <label for="info-qty">Số file Khai thác:</label>
+                        <input type="number" id="info-qty" value="1" min="0">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h4>6. Tính toán & Thanh toán</h4>
+                <div class="vat-control">
+                    <label for="vat-rate">Thuế suất GTGT (%):</label>
+                    <input type="number" id="vat-rate" value="8" min="0" step="0.1">
+                </div>
+                 <button type="submit" id="calculate-btn" class="calculate-btn">Tính Tổng Chi Phí</button>
+            </div>
+        </form>
+
+        <div id="results-container" class="hidden">
+            <div class="results-header">
+                <h2>Bảng Kê Chi Tiết</h2>
+                <div class="export-buttons">
+                    <button id="export-contract-btn" class="hidden">📄 Xuất Hợp đồng</button>
+                    <button id="export-liquidation-btn" class="hidden">🖨️ Xuất File Thanh Lý</button>
+                </div>
+            </div>
+            <div id="results-display"></div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
