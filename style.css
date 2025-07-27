@@ -9,18 +9,32 @@ body {
 }
 .container {
     width: 100%;
-    max-width: 800px;
+    max-width: 900px;
     background-color: #fff;
     padding: 30px;
     border-radius: 8px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
 }
-h1, h2 {
-    color: #0056b3;
+.hidden {
+    display: none !important;
+}
+.view-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     border-bottom: 2px solid #e0e0e0;
     padding-bottom: 10px;
     margin-bottom: 20px;
 }
+h1, h2 {
+    color: #0056b3;
+    margin: 0;
+    border: none;
+    padding: 0;
+}
+h1 { font-size: 24px; }
+h2 { font-size: 20px; }
 h4 {
     margin-top: 0;
     margin-bottom: 15px;
@@ -49,24 +63,11 @@ button {
 }
 button:hover { background-color: #0056b3; }
 
-.form-group {
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 15px;
-}
+.form-group { display: flex; flex-direction: column; margin-bottom: 15px; }
 .form-group:last-child { margin-bottom: 0; }
 .form-group label { margin-bottom: 5px; font-size: 14px; font-weight: bold; color: #555; }
-
-.form-group-row {
-    display: flex;
-    gap: 20px;
-    flex-wrap: wrap;
-}
-.form-group-row .form-group {
-    flex: 1;
-    min-width: 250px;
-    margin-bottom: 0;
-}
+.form-group-row { display: flex; gap: 20px; flex-wrap: wrap; }
+.form-group-row .form-group { flex: 1; min-width: 250px; margin-bottom: 0; }
 
 .parcel-card { border: 1px solid #0056b3; border-radius: 8px; margin-bottom: 20px; background-color: #fff; }
 .parcel-header { display: flex; justify-content: space-between; align-items: center; background-color: #e9f5ff; padding: 10px 15px; }
@@ -97,15 +98,13 @@ button:hover { background-color: #0056b3; }
 
 .empty-state { text-align: center; color: #777; padding: 20px; border: 2px dashed #ddd; border-radius: 5px; }
 #results-container { margin-top: 30px; padding: 20px; border: 1px solid #dee2e6; border-radius: 5px; }
-.results-header { display: flex; justify-content: space-between; align-items: center; }
-
+.results-header { display: flex; justify-content: space-between; align-items: center; border: none; }
 .export-buttons { display: flex; gap: 10px; }
 #export-liquidation-btn { background-color: #17a2b8; }
 #export-liquidation-btn:hover { background-color: #138496; }
 #export-contract-btn { background-color: #6f42c1; }
 #export-contract-btn:hover { background-color: #5a32a3; }
 .export-buttons button.hidden { display: none; }
-
 
 .result-group-header, .result-parcel-header { font-weight: bold; color: #0056b3; margin-top: 15px; margin-bottom: 5px; font-size: 18px; }
 .result-group-header:first-child { margin-top: 0; }
@@ -124,3 +123,19 @@ button:hover { background-color: #0056b3; }
 .payment-line label { font-weight: bold; color: #333; }
 .payment-line input { max-width: 180px; text-align: right; font-weight: bold; border: 1px solid #007bff; }
 .payment-line .payment-value { font-weight: bold; color: #0056b3; }
+
+/* Styles for Manager View */
+.stats-container { display: flex; gap: 20px; justify-content: space-around; }
+.stat-box { background-color: #fff; padding: 20px; border-radius: 8px; text-align: center; flex: 1; border: 1px solid #e0e0e0; }
+.stat-value { font-size: 28px; font-weight: bold; color: #0056b3; }
+.stat-label { font-size: 16px; color: #6c757d; }
+.backup-container { display: flex; gap: 15px; }
+.manager-table-container { overflow-x: auto; }
+.manager-table { width: 100%; border-collapse: collapse; }
+.manager-table th, .manager-table td { border: 1px solid #dee2e6; padding: 12px; text-align: left; }
+.manager-table th { background-color: #f8f9fa; }
+.manager-table td .actions-group { display: flex; gap: 5px; }
+.manager-table td .actions-group button { padding: 5px 8px; font-size: 12px; }
+.manager-table .load-btn { background-color: #28a745; }
+.manager-table .delete-btn { background-color: #dc3545; }
+.manager-table .re-export-btn { background-color: #17a2b8; }

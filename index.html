@@ -7,8 +7,11 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container" id="main-container">
-        <h1>📝 Công Cụ Tính Phí Dịch Vụ Đo Đạc</h1>
+    <div class="container" id="calculator-view">
+        <div class="view-header">
+            <h1>📝 Công Cụ Tính Phí Dịch Vụ Đo Đạc</h1>
+            <button id="show-manager-btn">📂 Quản lý Hồ sơ</button>
+        </div>
         
         <div class="card">
             <h4>1. Chọn Khu vực Làm việc</h4>
@@ -23,7 +26,7 @@
             <div class="form-group-row">
                 <div class="form-group">
                     <label for="client-name">Họ và tên:</label>
-                    <input type="text" id="client-name" value="Điểu Dương">
+                    <input type="text" id="client-name" placeholder="Nhập tên khách hàng...">
                 </div>
                 <div class="form-group">
                     <label for="client-phone">Số điện thoại:</label>
@@ -32,7 +35,7 @@
             </div>
             <div class="form-group">
                 <label for="client-address">Địa chỉ:</label>
-                <input type="text" id="client-address" value="Phường Bảo Vinh, thành phố Long Khánh, tỉnh Đồng Nai">
+                <input type="text" id="client-address" placeholder="Nhập địa chỉ khách hàng...">
             </div>
         </div>
         
@@ -76,11 +79,11 @@
                 <div class="fixed-services-container">
                     <div class="input-group">
                         <label for="photo-qty">Số tờ Phôtô:</label>
-                        <input type="number" id="photo-qty" value="5" min="0">
+                        <input type="number" id="photo-qty" value="0" min="0">
                     </div>
                     <div class="input-group">
                         <label for="info-qty">Số file Khai thác:</label>
-                        <input type="number" id="info-qty" value="1" min="0">
+                        <input type="number" id="info-qty" value="0" min="0">
                     </div>
                 </div>
             </div>
@@ -91,7 +94,7 @@
                     <label for="vat-rate">Thuế suất GTGT (%):</label>
                     <input type="number" id="vat-rate" value="8" min="0" step="0.1">
                 </div>
-                 <button type="submit" id="calculate-btn" class="calculate-btn">Tính Tổng Chi Phí</button>
+                 <button type="submit" id="calculate-btn" class="calculate-btn">Lưu & Tính Tổng Chi Phí</button>
             </div>
         </form>
 
@@ -104,6 +107,55 @@
                 </div>
             </div>
             <div id="results-display"></div>
+        </div>
+    </div>
+
+    <div class="container hidden" id="manager-view">
+        <div class="view-header">
+            <h1>📂 Trang Quản lý Hồ sơ</h1>
+            <button id="show-calculator-btn">➕ Tạo Hồ sơ mới</button>
+        </div>
+
+        <div class="card">
+            <h4>Thống kê</h4>
+            <div class="stats-container">
+                <div class="stat-box">
+                    <div class="stat-value" id="total-records">0</div>
+                    <div class="stat-label">Tổng số Hồ sơ</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value" id="total-revenue">0 ₫</div>
+                    <div class="stat-label">Tổng Doanh thu</div>
+                </div>
+            </div>
+        </div>
+
+         <div class="card">
+            <h4>Sao lưu & Phục hồi Dữ liệu</h4>
+            <div class="backup-container">
+                <button id="export-data-btn">📥 Tải về file Sao lưu</button>
+                <input type="file" id="import-data-input" accept=".json" style="display: none;">
+                <button id="import-data-btn">📤 Tải lên file Sao lưu</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <h4>Danh sách Hồ sơ đã lưu</h4>
+            <div class="manager-table-container">
+                <table class="manager-table">
+                    <thead>
+                        <tr>
+                            <th>Ngày thanh lý</th>
+                            <th>Khách hàng</th>
+                            <th>Số Hợp đồng</th>
+                            <th>Tổng tiền</th>
+                            <th>Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody id="manager-records-body">
+                        </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
