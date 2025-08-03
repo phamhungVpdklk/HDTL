@@ -1,0 +1,89 @@
+{
+  "do_chinh_ly": {
+    "name": "Đo chỉnh lý bản trích đo địa chính",
+    "unit": "Thửa",
+    "type": "area_based",
+    "tiers": [
+      { "max_area": 100, "price": 913000 },
+      { "max_area": 300, "price": 1085000 },
+      { "max_area": 500, "price": 1150000 },
+      { "max_area": 1000, "price": 1408000 },
+      { "max_area": 3000, "price": 1933000 },
+      { "max_area": 10000, "price": 2969000 },
+      { "max_area": 100000, "price": 3563000 },
+      { "max_area": 500000, "price": 4157000 }
+    ],
+    "source_note": "Đơn giá dựa trên mục III.1. Có sự trùng lặp ...2 (giá thứ hai là 3.860.000), giá đầu tiên được chọn. [cite: 2]"
+  },
+  "doi_soat_ban_do": {
+    "name": "Đối soát bản đồ địa chính",
+    "unit": "Thửa",
+    "type": "area_based",
+    "tiers": [
+      { "max_area": 100, "price": 310000 },
+      { "max_area": 300, "price": 369000 },
+      { "max_area": 500, "price": 391000 },
+      { "max_area": 1000, "price": 479000 },
+      { "max_area": 3000, "price": 657000 },
+      { "max_area": 10000, "price": 1010000 },
+      { "max_area": 100000, "price": 1212000 },
+      { "max_area": 500000, "price": 1414000 }
+    ],
+    "source_note": "Đơn giá dựa trên mục VIII. Có sự trùng lặp ở mức >10000-100000 ...2 (giá thứ hai là 1.313.000), giá đầu tiên được chọn. [cite: 8]"
+  },
+  "bien_ve": {
+    "name": "Trích lục và biên vẽ thửa đất",
+    "unit": "Thửa",
+    "type": "progressive_discount",
+    "base_price": 235000,
+    "tiers": [
+      { "max_count": 1, "rate": 1.0 },
+      { "max_count": 10, "rate": 0.8 },
+      { "max_count": 100, "rate": 0.5 },
+      { "max_count": "infinity", "rate": 0.4 }
+    ],
+    "source_note": "Đơn giá và các mức chiết khấu dựa trên mục VII. [cite: 4, 5, 6]"
+  },
+  "xuat_ho_so_a4": {
+    "name": "Xuất hồ sơ kỹ thuật thửa đất A4",
+    "unit": "Thửa",
+    "type": "fixed_rate",
+    "price": 90000,
+    "source_note": "Đơn giá dựa trên mục VII. [cite: 4]"
+  },
+  "cong_ngoai_nghiep": {
+    "name": "Công ngoại nghiệp",
+    "unit": "công",
+    "type": "fixed_rate",
+    "price": 225000,
+    "source_note": "Đơn giá dựa trên mục IX. [cite: 10]"
+  },
+  "cong_noi_nghiep": {
+    "name": "Công nội nghiệp",
+    "unit": "công",
+    "type": "fixed_rate",
+    "price": 202000,
+    "source_note": "Đơn giá dựa trên mục IX. [cite: 10]"
+  },
+  "do_vi_tri_moc": {
+    "name": "Đo xác định vị trí mốc",
+    "unit": "mốc",
+    "type": "fixed_rate",
+    "price": 149000,
+    "source_note": "Đơn giá dựa trên mục IX. [cite: 10]"
+  },
+  "pho_to": {
+    "name": "Phô tô tài liệu",
+    "unit": "tờ",
+    "type": "fixed_rate",
+    "price": 2000,
+    "vat_applicable": true
+  },
+  "khai_thac_thong_tin": {
+    "name": "Khai thác thông tin",
+    "unit": "file",
+    "type": "fixed_rate",
+    "price": 40000,
+    "vat_applicable": false
+  }
+}
