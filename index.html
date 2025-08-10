@@ -173,9 +173,11 @@
         <div class="card">
             <h4>Danh sách Hồ sơ đã lưu</h4>
              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                <!-- THÊM MỚI: Span để hiển thị trạng thái cập nhật -->
                 <span id="update-status" style="font-style: italic; color: #6c757d;"></span>
-                <button id="export-csv-btn" style="background-color: #17a2b8;">📊 Xuất báo cáo (CSV)</button>
+                <div class="export-buttons-group">
+                    <button id="export-summary-btn" style="background-color: #28a745;">📄 Báo cáo Tổng hợp</button>
+                    <button id="export-csv-btn" style="background-color: #17a2b8;">📊 Xuất Dữ liệu (CSV)</button>
+                </div>
             </div>
 
             <div class="filter-controls">
@@ -230,6 +232,7 @@
     <script src="js/templates/liquidation.js"></script>
     <script src="js/templates/receipt.js"></script>
     <script src="js/templates/controlSheet.js"></script>
+    <script src="js/templates/summaryReport.js"></script>
     <script src="js/main.js"></script>
 </body>
 </html>
