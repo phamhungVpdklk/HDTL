@@ -746,3 +746,9 @@ button:hover {
     font-size: 0.9em;
     color: #6c757d;
 }
+
+/* --- CSS CHO NHÓM NÚT XUẤT FILE --- */
+.export-buttons-group {
+    display: flex;
+    gap: 10px;
+}
