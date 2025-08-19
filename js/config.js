@@ -20,6 +20,7 @@ const AppConfig = {
         "bao_vinh": { name: "Bảo Vinh", type: "phường", liquidationSymbol: "TLHĐ.BV.VPĐK", contractSymbol: "HĐDV.BV.VPĐK" },
         "binh_loc": { name: "Bình Lộc", type: "phường", liquidationSymbol: "TLHĐ.BL.VPĐK", contractSymbol: "HĐDV.BL.VPĐK" },
         "xuan_lap": { name: "Xuân Lập", type: "phường", liquidationSymbol: "TLHĐ.XL.VPĐK", contractSymbol: "HĐDV.XL.VPĐK" },
-        "hang_gon": { name: "Hàng Gòn", type: "xã", liquidationSymbol: "TLHĐ.HG.VPĐK", contractSymbol: "HĐDV.HG.VPĐK" }
+        "hang_gon": { name: "Hàng Gòn", type: "phường", liquidationSymbol: "TLHĐ.HG.VPĐK", contractSymbol: "HĐDV.HG.VPĐK" }
     }
 };
+
