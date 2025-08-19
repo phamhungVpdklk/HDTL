@@ -310,10 +310,11 @@
         },
 
         displayResultsOnPage(data) {
+            const profile = Object.values(AppConfig.communeProfiles).find(p => p.name === data.contractInfo.location) || { type: 'phường' };
             let displayHTML = `<div class="result-group-header">I. Tổng chi phí thực hiện</div>`;
             if (data.allOptionalItems.length > 0) {
                 data.allOptionalItems.forEach((parcel, index) => {
-                    displayHTML += `<div class="result-parcel-header">${index + 1}. Hồ sơ (Tờ: ${escapeHTML(parcel.mapSheet)}, Thửa: ${escapeHTML(parcel.parcelNo)}, Dt: ${parcel.area} m², Tại: ${escapeHTML(parcel.address)})</div>`;
+                    displayHTML += `<div class="result-parcel-header">${index + 1}. Hồ sơ (Tờ: ${escapeHTML(parcel.mapSheet)}, Thửa: ${escapeHTML(parcel.parcelNo)}, Dt: ${parcel.area} m², Tại: ${profile.type} ${escapeHTML(parcel.address)})</div>`;
                     parcel.services.forEach(service => {
                         displayHTML += `<div class="result-line"><span>- ${escapeHTML(service.name)}</span><span>${formatCurrency(service.cost)}</span></div>`;
                     });
@@ -606,15 +607,43 @@
             return errors;
         },
 
+        /**
+         * *** LOGIC MỚI: "Từ điển" nội dung chi tiết ***
+         * @param {object} titleObject - Object chứa line1 và line2 của tiêu đề.
+         * @returns {string} Nội dung yêu cầu giải quyết chi tiết.
+         */
+        getDetailedContent(titleObject) {
+            const baseText = "phục vụ công tác cấp giấy chứng nhận quyền sử dụng đất, chuyển quyền sử dụng đất, bồi thường, giải phóng mặt bằng, giao đất, thuê đất, thu hồi đất và công tác chỉnh lý biến động bản đồ địa chính.";
+            const title = titleObject.line1 || '';
+            
+            if (title.includes('Đo đạc chỉnh lý')) return `Đo đạc chỉnh lý thửa đất, khu đất bản đồ địa chính ${baseText}`;
+            if (title.includes('Đo xác định mốc')) return `Đo xác định mốc thửa đất, khu đất bản đồ địa chính ${baseText}`;
+            if (title.includes('Đo tách thửa')) return `Đo tách thửa đất, khu đất bản đồ địa chính ${baseText}`;
+            if (title.includes('Biên vẽ') && title.includes('đối soát')) return `Trích lục và biên vẽ có đối soát thửa đất, khu đất bản đồ địa chính ${baseText}`;
+            if (title.includes('Biên vẽ') && title.includes('Cập nhật ranh')) return `Trích lục và biên vẽ (cập nhật ranh thu hồi) thửa đất, khu đất bản đồ địa chính ${baseText}`;
+            if (title.includes('Biên vẽ')) return `Trích lục và biên vẽ thửa đất, khu đất bản đồ địa chính ${baseText}`;
+
+            return `Cung cấp dịch vụ đo đạc địa chính ${baseText}`;
+        },
+
+        determineContractTitleObject(serviceKeys, location, locationType) {
+            const has = (key) => serviceKeys.includes(key);
+            const count = (key) => serviceKeys.filter(k => k === key).length;
+            const fullLocation = `Tại ${locationType} ${location}, tỉnh Đồng Nai`;
+
+            if (count('do_chinh_ly') >= 2 && has('cap_nhat_file')) return { line1: 'Đo tách thửa đất BĐĐC', line2: fullLocation };
+            if (has('do_chinh_ly')) return { line1: 'Đo đạc chỉnh lý thửa đất BĐĐC', line2: fullLocation };
+            if (has('doi_soat_ban_do') && has('do_vi_tri_moc')) return { line1: 'Đo xác định mốc thửa đất BĐĐC', line2: fullLocation };
+            if (has('bien_ve') && has('cap_nhat_ranh_thu_hoi')) return { line1: 'Biên vẽ BĐĐC thửa đất (Cập nhật ranh thu hồi)', line2: fullLocation };
+            if (has('bien_ve') && has('doi_soat_ban_do')) return { line1: 'Biên vẽ BĐĐC thửa đất (có đối soát)', line2: fullLocation };
+            if (has('bien_ve')) return { line1: 'Biên vẽ BĐĐC thửa đất', line2: fullLocation };
+            
+            return { line1: 'Cung cấp dịch vụ đo đạc địa chính', line2: fullLocation };
+        },
+
         buildInvoiceDataFromDOM() {
             const selectedCommuneProfile = AppConfig.communeProfiles[dom.communeSelect.value];
-            const contractInfo = {
-                location: selectedCommuneProfile.name,
-                fullNumber: `TẠM/${selectedCommuneProfile.contractSymbol}`,
-                date: dom.contractDateInput.value,
-                fullLiquidationNumber: `TẠM/${selectedCommuneProfile.liquidationSymbol}`,
-                liquidationDate: dom.liquidationDateInput.value
-            };
+            
             const clientInfo = {
                 name: dom.clientNameInput.value,
                 phone: dom.clientPhoneInput.value,
@@ -623,6 +652,9 @@
             };
             const allOptionalItems = [];
             let totalSection1 = 0;
+            let doChinhLyCounter = 0;
+            const allServiceKeys = [];
+
             document.querySelectorAll('.parcel-card').forEach(card => {
                 const area = parseFloat((card.querySelector('.area-input').value || '0').replace(',', '.')) || 0;
                 const parcelInfo = {
@@ -634,11 +666,20 @@
                 };
                 card.querySelectorAll('.service-item-line').forEach(line => {
                     const serviceKey = line.dataset.serviceKey;
+                    allServiceKeys.push(serviceKey);
                     const service = state.pricingData[serviceKey];
                     let value = (service.type === 'area_based') ? area : parseFloat((line.querySelector('.calc-value-input')?.value || '0').replace(',', '.')) || 0;
                     if (value > 0) {
                         let cost = 0;
-                        if (service.type === 'area_based') cost = calculateAreaBased(service, value);
+                        if (service.type === 'area_based') {
+                            cost = calculateAreaBased(service, value);
+                            if (service.multiParcelDiscountRate) {
+                                doChinhLyCounter++;
+                                if (doChinhLyCounter > 1) {
+                                    cost *= service.multiParcelDiscountRate;
+                                }
+                            }
+                        }
                         else if (service.type === 'progressive_discount') cost = calculateProgressiveDiscount(service, value);
                         else if (service.type === 'fixed_rate') cost = service.price * value;
                         
@@ -651,6 +692,21 @@
                 });
                 if (parcelInfo.services.length > 0) allOptionalItems.push(parcelInfo);
             });
+
+            const contractTitleObject = this.determineContractTitleObject(allServiceKeys, selectedCommuneProfile.name, selectedCommuneProfile.type);
+            const detailedContent = this.getDetailedContent(contractTitleObject);
+
+            const contractInfo = {
+                titleObject: contractTitleObject, 
+                detailedContent: detailedContent,
+                location: selectedCommuneProfile.name,
+                locationType: selectedCommuneProfile.type,
+                fullNumber: `TẠM/${selectedCommuneProfile.contractSymbol}`,
+                date: dom.contractDateInput.value,
+                fullLiquidationNumber: `TẠM/${selectedCommuneProfile.liquidationSymbol}`,
+                liquidationDate: dom.liquidationDateInput.value
+            };
+
             const contractType = allOptionalItems.some(p => p.services.some(s => s.serviceKey === 'bien_ve')) ? 'simple' : 'complex';
             const photoQty = parseFloat(dom.photoQtyInput.value) || 0;
             const infoQty = parseFloat(dom.infoQtyInput.value) || 0;
@@ -814,11 +870,22 @@
                 setTimeout(() => { printWindow.print(); }, 250);
             };
 
+            const ensureDynamicContent = (record) => {
+                if (!record.contractInfo.titleObject || !record.contractInfo.detailedContent) {
+                    const allServiceKeys = record.allOptionalItems.flatMap(p => p.services.map(s => s.serviceKey));
+                    const profile = Object.values(AppConfig.communeProfiles).find(p => p.name === record.contractInfo.location) || { type: 'phường' };
+                    record.contractInfo.titleObject = core.determineContractTitleObject(allServiceKeys, record.contractInfo.location, profile.type);
+                    record.contractInfo.detailedContent = core.getDetailedContent(record.contractInfo.titleObject);
+                }
+            };
+
             dom.exportContractBtn.addEventListener('click', () => {
-                if(!state.currentInvoiceData.id) { modal.alert('Thông báo', 'Vui lòng lưu hồ sơ trước khi xuất.'); return; }
+                if (!state.currentInvoiceData.id) { modal.alert('Thông báo', 'Vui lòng lưu hồ sơ trước khi xuất.'); return; }
+                ensureDynamicContent(state.currentInvoiceData);
                 let html = state.currentInvoiceData.contractType === 'simple' ? generateSimpleContractHTML(state.currentInvoiceData) : generateContractHTML(state.currentInvoiceData);
                 printDocument(html);
             });
+            
             dom.exportLiquidationBtn.addEventListener('click', () => {
                 if(!state.currentInvoiceData.id) { modal.alert('Thông báo', 'Vui lòng lưu hồ sơ trước khi xuất.'); return; }
                 printDocument(generateLiquidationHTML(state.currentInvoiceData));
@@ -826,17 +893,23 @@
             
             dom.exportReceiptBtn.addEventListener('click', () => {
                 if(!state.currentInvoiceData.id) { modal.alert('Thông báo', 'Vui lòng lưu hồ sơ trước khi xuất.'); return; }
+                ensureDynamicContent(state.currentInvoiceData);
                 const isSimple = state.currentInvoiceData.contractType === 'simple';
                 const soNgayLamViec = isSimple ? 3 : 10;
                 const now = new Date();
                 const ngayNhanFormatted = `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')}/${now.getFullYear()}`;
                 const ngayTraFormatted = calculateReturnDate(now, soNgayLamViec);
                 const firstParcel = state.currentInvoiceData.allOptionalItems[0] || {};
+                const profile = Object.values(AppConfig.communeProfiles).find(p => p.name === state.currentInvoiceData.contractInfo.location) || { type: 'phường' };
+
                 const data = {
                     date: ngayNhanFormatted, ngayNhan: ngayNhanFormatted, ngayTra: ngayTraFormatted, place: state.currentInvoiceData.contractInfo.location,
                     nguoiNop: state.currentInvoiceData.clientInfo.name, diaChi: state.currentInvoiceData.clientInfo.address, dienThoai: state.currentInvoiceData.clientInfo.phone,
-                    email: state.currentInvoiceData.clientInfo.email, noiDung: isSimple ? "Trích lục và biên vẽ..." : "Đo đạc tách, hợp thửa...",
-                    soTo: firstParcel.mapSheet, soThua: firstParcel.parcelNo, diaChiThuaDat: firstParcel.address, soHopDong: state.currentInvoiceData.contractInfo.fullNumber,
+                    email: state.currentInvoiceData.clientInfo.email, 
+                    noiDung: state.currentInvoiceData.contractInfo.detailedContent,
+                    soTo: firstParcel.mapSheet, soThua: firstParcel.parcelNo, 
+                    diaChiThuaDat: `${profile.type} ${firstParcel.address}`, 
+                    soHopDong: state.currentInvoiceData.contractInfo.fullNumber,
                     giayTo: [{ ten: 'Giấy chứng nhận quyền sử dụng đất (nếu có)', soBanChinh: 0, soBanSao: 1 }, { ten: 'Các giấy tờ khác có liên quan kèm theo', soBanChinh: 0, soBanSao: 1 }],
                     soLuongHoSo: 1, thoiGianGiaiQuyet: `${soNgayLamViec} ngày làm việc`, noiNhanKetQua: 'VPĐK Đất đai tỉnh Đồng Nai - Chi nhánh Long Khánh', nguoiNhanKetQua: state.currentInvoiceData.clientInfo.name
                 };
@@ -845,16 +918,20 @@
 
             dom.exportControlSheetBtn.addEventListener('click', () => {
                 if(!state.currentInvoiceData.id) { modal.alert('Thông báo', 'Vui lòng lưu hồ sơ trước khi xuất.'); return; }
+                ensureDynamicContent(state.currentInvoiceData);
                 const isSimple = state.currentInvoiceData.contractType === 'simple';
                 const soNgayLamViec = isSimple ? 3 : 10;
                 const now = new Date();
                 const ngayNhanFormatted = `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')}/${now.getFullYear()}`;
                 const ngayTraFormatted = calculateReturnDate(now, soNgayLamViec);
                 const firstParcel = state.currentInvoiceData.allOptionalItems[0] || {};
+                const profile = Object.values(AppConfig.communeProfiles).find(p => p.name === state.currentInvoiceData.contractInfo.location) || { type: 'phường' };
+
                 const data = {
                     chuHoSo: `${state.currentInvoiceData.clientInfo.name} – ${state.currentInvoiceData.contractInfo.fullNumber.split('/')[0]}`,
-                    loaiThuTuc: isSimple ? "Trích lục và biên vẽ..." : "Đo đạc tách, hợp thửa...", ngayNhan: ngayNhanFormatted, ngayTra: ngayTraFormatted,
-                    diaChi: `Số tờ: ${firstParcel.mapSheet}; số thửa: ${firstParcel.parcelNo}; tại: ${firstParcel.address}; Số HĐ: ${state.currentInvoiceData.contractInfo.fullNumber}`,
+                    loaiThuTuc: state.currentInvoiceData.contractInfo.detailedContent, 
+                    ngayNhan: ngayNhanFormatted, ngayTra: ngayTraFormatted,
+                    diaChi: `Số tờ: ${firstParcel.mapSheet}; số thửa: ${firstParcel.parcelNo}; tại: ${profile.type} ${firstParcel.address}; Số HĐ: ${state.currentInvoiceData.contractInfo.fullNumber}`,
                     place: state.currentInvoiceData.contractInfo.location
                 };
                 printDocument(generateControlSheetHTML(data));
@@ -872,8 +949,7 @@
                 else if (targetClass.contains('view-btn')) { ui.populateForm(record, 'view'); ui.switchView('calculator'); }
                 else if (targetClass.contains('re-export-btn')) {
                     state.currentInvoiceData = record;
-                    let html = record.contractType === 'simple' ? generateSimpleContractHTML(record) : generateContractHTML(record);
-                    if (html) printDocument(html);
+                    prepareAndPrint(record.contractType === 'simple');
                 }
             });
 
