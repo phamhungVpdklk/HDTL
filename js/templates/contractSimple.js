@@ -7,7 +7,9 @@ function generateSimpleContractHTML(data) {
     let serviceCounter = 1;
     data.allOptionalItems.forEach(parcel => {
         parcel.services.forEach(service => {
-            const description = `${escapeHTML(service.name)} (Thửa ${escapeHTML(parcel.parcelNo)} tờ số ${escapeHTML(parcel.mapSheet)})`;
+            // *** THAY ĐỔI QUAN TRỌNG: Thêm logic mặc định cho locationType ***
+            const locationType = data.contractInfo.locationType || 'phường';
+            const description = `${escapeHTML(service.name)} (Thửa ${escapeHTML(parcel.parcelNo)} tờ số ${escapeHTML(parcel.mapSheet)}, tại ${locationType} ${escapeHTML(parcel.address)})`;
             rowsHTML += `<tr> <td>${serviceCounter++}</td> <td>${description}</td> <td>Thửa</td> <td>${service.quantity}</td> <td class="currency">${formatCurrency(service.unitPrice)}</td> <td class="currency">${formatCurrency(service.cost)}</td> </tr>`;
         });
     });
@@ -17,16 +19,27 @@ function generateSimpleContractHTML(data) {
     rowsHTML += `<tr> <td class="bold">III</td> <td class="bold">Khai thác thông tin</td> <td>${data.infoData.unit}</td> <td>${data.infoData.quantity}</td> <td class="currency">${formatCurrency(data.infoData.price)}</td> <td class="bold currency">${formatCurrency(data.infoData.cost)}</td> </tr>`;
     rowsHTML += `<tr> <td colspan="5" class="bold align-right total-row">Tổng cộng</td> <td class="bold currency total-row">${formatCurrency(data.grandTotal)}</td> </tr>`;
     
-    // *** THAY ĐỔI QUAN TRỌNG: Lấy tiêu đề từ titleObject để đảm bảo tính nhất quán ***
     const mainTitleText = data.contractInfo.titleObject ? data.contractInfo.titleObject.line1 : 'Hợp đồng Dịch vụ';
-    const locationText = data.contractInfo.titleObject ? data.contractInfo.titleObject.line2 : `Tại ${data.contractInfo.locationType} ${data.contractInfo.location}, tỉnh Đồng Nai`;
+    const locationText = data.contractInfo.titleObject ? data.contractInfo.titleObject.line2 : `Tại ${data.contractInfo.locationType || 'phường'} ${data.contractInfo.location}, tỉnh Đồng Nai`;
 
-    return `<html><head><title>Hợp đồng Biên Vẽ</title><style>@page{size:A4 portrait;margin-left:1.5cm;margin-top:1cm;margin-right:1cm;margin-bottom:1cm}body{font-family:'Times',serif;font-size:13pt;line-height:1;color:#000}.bold{font-weight:700}.italic{font-style:italic}.header-table{width:100%;border-collapse:collapse}.header-table td{width:50%;vertical-align:top;text-align:center}.main-title{font-size:14pt;font-weight:700;text-align:center;margin-top:10px}.sub-title{font-size:13pt;font-weight:700;text-align:center;margin-bottom:2px}.location-title{font-size:13pt;font-weight:700;text-align:center;margin-bottom:10px}.content p{margin:5px 0;text-align:justify}.content .indent{text-indent:25px}.party-info{margin-top:10px;margin-bottom:10px}.party-info p{margin:2px 0}.party-detail{padding-left:20px}.cost-table{width:100%;border-collapse:collapse;margin:10px 0}.cost-table th,.cost-table td{border:1px solid #333;padding:4px;text-align:left}.cost-table th{text-align:center;font-weight:700}.cost-table td:nth-child(1),.cost-table td:nth-child(3),.cost-table td:nth-child(4){text-align:center}.currency{text-align:right!important}.align-right{text-align:right}.footer-table{width:100%;border:none;margin-top:25px}.footer-table td{text-align:center;font-weight:700;width:50%}.page-break{page-break-before:always}</style></head>
+    return `<html><head><title>Hợp đồng Biên Vẽ</title><style>@page{size:A4 portrait;margin-left:1.5cm;margin-top:1cm;margin-right:1cm;margin-bottom:1cm}body{font-family:'Times',serif;font-size:13pt;line-height:1.2;color:#000}.bold{font-weight:700}.italic{font-style:italic}.header-table{width:100%;border-collapse:collapse;font-size:11pt}.header-table td{width:50%;vertical-align:top;text-align:center}.underline-container{display:inline-block;text-align:center}.underline-short{border-top:1px solid #000;width:67%;margin:0 auto}.main-title{font-size:14pt;font-weight:700;text-align:center;margin-top:10px}.sub-title{font-size:13pt;font-weight:700;text-align:center;margin-bottom:2px}.location-title{font-size:13pt;font-weight:700;text-align:center;margin-bottom:10px}.content p{margin:5px 0;text-align:justify}.content .indent{text-indent:25px}.party-info{margin-top:10px;margin-bottom:10px}.party-info p{margin:2px 0}.party-detail{padding-left:20px}.cost-table{width:100%;border-collapse:collapse;margin:10px 0}.cost-table th,.cost-table td{border:1px solid #333;padding:4px;text-align:left}.cost-table th{text-align:center;font-weight:700}.cost-table td:nth-child(1),.cost-table td:nth-child(3),.cost-table td:nth-child(4){text-align:center}.currency{text-align:right!important}.align-right{text-align:right}.footer-table{width:100%;border:none;margin-top:25px}.footer-table td{text-align:center;font-weight:700;width:50%}.page-break{page-break-before:always}</style></head>
         <body>
             <table class="header-table">
                 <tr>
-                    <td><span class="bold">VĂN PHÒNG ĐĂNG KÝ ĐẤT ĐAI</span><br><span class="bold">TỈNH ĐỒNG NAI CHI NHÁNH LONG KHÁNH</span></td>
-                    <td><span class="bold">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</span><br><span class="bold">Độc lập - Tự do - Hạnh phúc</span></td>
+                    <td>
+                        <div class="bold">VĂN PHÒNG ĐĂNG KÝ ĐẤT ĐAI</div>
+                        <div class="underline-container">
+                             <div class="bold">TỈNH ĐỒNG NAI – CHI NHÁNH LONG KHÁNH</div>
+                             <div class="underline-short"></div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="bold">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</div>
+                        <div class="underline-container">
+                            <div class="bold">Độc lập - Tự do - Hạnh phúc</div>
+                            <div class="underline-short"></div>
+                        </div>
+                    </td>
                 </tr>
                 <tr>
                     <td>Số: ${escapeHTML(data.contractInfo.fullNumber)}</td>
