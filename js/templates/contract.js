@@ -8,9 +8,11 @@ function generateContractHTML(data) {
     data.allOptionalItems.forEach(parcel => {
         parcel.services.forEach(service => {
             const unitText = service.unit === 'm²' ? 'm<sup>2</sup>' : service.unit;
+            // *** THAY ĐỔI QUAN TRỌNG: Thêm logic mặc định cho locationType ***
+            const locationType = data.contractInfo.locationType || 'phường';
             const description = service.type === 'area_based' 
-                ? `${escapeHTML(service.name)} (Tờ ${escapeHTML(parcel.mapSheet)}, Thửa ${escapeHTML(parcel.parcelNo)}, Dt ${parcel.area} m², tại ${data.contractInfo.locationType} ${escapeHTML(parcel.address)})` 
-                : `${escapeHTML(service.name)} (Tờ ${escapeHTML(parcel.mapSheet)}, Thửa ${escapeHTML(parcel.parcelNo)}, tại ${data.contractInfo.locationType} ${escapeHTML(parcel.address)})`;
+                ? `${escapeHTML(service.name)} (Tờ ${escapeHTML(parcel.mapSheet)}, Thửa ${escapeHTML(parcel.parcelNo)}, Dt ${parcel.area} m², tại ${locationType} ${escapeHTML(parcel.address)})` 
+                : `${escapeHTML(service.name)} (Tờ ${escapeHTML(parcel.mapSheet)}, Thửa ${escapeHTML(parcel.parcelNo)}, tại ${locationType} ${escapeHTML(parcel.address)})`;
             rowsHTML += `<tr> <td>${serviceCounter++}</td> <td>${description}</td> <td>${unitText}</td> <td>${service.quantity}</td> <td class="currency">${formatCurrency(service.unitPrice)}</td> <td class="currency">${formatCurrency(service.cost)}</td> </tr>`;
         });
     });
@@ -20,14 +22,32 @@ function generateContractHTML(data) {
     rowsHTML += `<tr> <td class="bold">III</td> <td class="bold">Khai thác thông tin</td> <td>${data.infoData.unit}</td> <td>${data.infoData.quantity}</td> <td class="currency">${formatCurrency(data.infoData.price)}</td> <td class="bold currency">${formatCurrency(data.infoData.cost)}</td> </tr>`;
     rowsHTML += `<tr> <td colspan="5" class="bold align-right total-row">Tổng cộng</td> <td class="bold currency total-row">${formatCurrency(data.grandTotal)}</td> </tr>`;
     
-    // *** THAY ĐỔI QUAN TRỌNG: Lấy tiêu đề từ titleObject để đảm bảo tính nhất quán ***
     const mainTitleText = data.contractInfo.titleObject ? data.contractInfo.titleObject.line1 : 'Hợp đồng Dịch vụ';
-    const locationText = data.contractInfo.titleObject ? data.contractInfo.titleObject.line2 : `Tại ${data.contractInfo.locationType} ${data.contractInfo.location}, tỉnh Đồng Nai`;
+    const locationText = data.contractInfo.titleObject ? data.contractInfo.titleObject.line2 : `Tại ${data.contractInfo.locationType || 'phường'} ${data.contractInfo.location}, tỉnh Đồng Nai`;
 
-    return `<html><head><title>Hợp đồng đo đạc</title><style>@page{size:A4 portrait;margin-left:1.5cm;margin-top:1cm;margin-right:1cm;margin-bottom:1cm}body{font-family:'Times',serif;font-size:13pt;line-height:1;color:#000}.bold{font-weight:700}.italic{font-style:italic}.underline{text-decoration:underline}.header-table{width:100%;border-collapse:collapse;font-size:11pt;table-layout:fixed}.header-table td{border:none;padding:0;vertical-align:top;text-align:center}.org-main{font-weight:700}.line-separator{border-top:1px solid #000;margin:1px auto}.main-title{font-size:14pt;font-weight:700;text-align:center;margin:10px 0}.sub-title{font-size:13pt;font-weight:700;text-align:center;margin-bottom:2px}.location-title{font-size:13pt;font-weight:700;text-align:center;margin-bottom:10px}.content p{margin:2px 0;text-align:justify}.content .indent{text-indent:15px}.cost-table{width:100%;border-collapse:collapse;margin:10px 0}.cost-table th,.cost-table td{border:1px solid #333;padding:3px 4px;text-align:left;vertical-align:top;font-size:11pt;line-height:1}.cost-table th{background-color:#f2f2f2;text-align:center;font-weight:700}.cost-table td:nth-child(1),.cost-table td:nth-child(3),.cost-table td:nth-child(4){text-align:center}.align-right{text-align:right}.total-row{font-size:1.1em}.currency{text-align:right!important}.footer-table{width:100%;border:none}.footer-table td{text-align:center;font-weight:700;border:none;padding:0}.page-break{page-break-before:always}.party-info{margin:10px 0}.party-info p{margin:2px 0;text-align:justify}.party-detail{padding-left:20px}.page-2-content{font-size:13pt;line-height:1.15}.page-2-content .content p{margin:1.5px 0}.page-2-content .footer-table{margin-top:20px}</style></head>
+    return `<html><head><title>Hợp đồng đo đạc</title><style>@page{size:A4 portrait;margin-left:1.5cm;margin-top:1cm;margin-right:1cm;margin-bottom:1cm}body{font-family:'Times',serif;font-size:13pt;line-height:1.2;color:#000}.bold{font-weight:700}.italic{font-style:italic}.header-table{width:100%;border-collapse:collapse;font-size:11pt;table-layout:fixed}.header-table td{border:none;padding:0;vertical-align:top;text-align:center}.underline-container{display:inline-block;text-align:center}.underline-short{border-top:1px solid #000;width:67%;margin:0 auto}.main-title{font-size:14pt;font-weight:700;text-align:center;margin:10px 0}.sub-title{font-size:13pt;font-weight:700;text-align:center;margin-bottom:2px}.location-title{font-size:13pt;font-weight:700;text-align:center;margin-bottom:10px}.content p{margin:2px 0;text-align:justify}.content .indent{text-indent:15px}.cost-table{width:100%;border-collapse:collapse;margin:10px 0}.cost-table th,.cost-table td{border:1px solid #333;padding:3px 4px;text-align:left;vertical-align:top;font-size:11pt;line-height:1}.cost-table th{background-color:#f2f2f2;text-align:center;font-weight:700}.cost-table td:nth-child(1),.cost-table td:nth-child(3),.cost-table td:nth-child(4){text-align:center}.align-right{text-align:right}.total-row{font-size:1.1em}.currency{text-align:right!important}.footer-table{width:100%;border:none}.footer-table td{text-align:center;font-weight:700;border:none;padding:0}.page-break{page-break-before:always}.party-info{margin:10px 0}.party-info p{margin:2px 0;text-align:justify}.party-detail{padding-left:20px}.page-2-content{font-size:13pt;line-height:1.15}.page-2-content .content p{margin:1.5px 0}.page-2-content .footer-table{margin-top:20px}</style></head>
         <body>
-            <div class="header"> <table class="header-table"> <tr> <td style="width: 50%;"> <div class="bold">VĂN PHÒNG ĐĂNG KÝ ĐẤT ĐAI</div> <div class="bold org-main">TỈNH ĐỒNG NAI CHI NHÁNH LONG KHÁNH</div> <div class="line-separator" style="width: 45%;"></div> <div>Số: ${escapeHTML(data.contractInfo.fullNumber)}</div> </td> <td style="width: 50%;"> <div class="bold">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT&nbsp;NAM</div> <div style="display: inline-block; text-align: center;"> <div class="bold">Độc lập - Tự do - Hạnh phúc</div> <div class="line-separator" style="width: 100%;"></div> </div> </td> </tr> </table> </div>
-            <p style="text-align: right;" class="italic">${data.contractInfo.locationType} ${escapeHTML(data.contractInfo.location)}, ngày ${contractDate.ngay} tháng ${contractDate.thang} năm ${contractDate.nam}</p>
+            <div class="header">
+                <table class="header-table">
+                    <tr>
+                        <td style="width: 50%;">
+                            <div class="bold">VĂN PHÒNG ĐĂNG KÝ ĐẤT ĐAI</div>
+                            <div class="underline-container">
+                                <div class="bold">TỈNH ĐỒNG NAI – CHI NHÁNH LONG KHÁNH</div>
+                                <div class="underline-short"></div>
+                            </div>
+                            <div>Số: ${escapeHTML(data.contractInfo.fullNumber)}</div>
+                        </td>
+                        <td style="width: 50%;">
+                            <div class="bold">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT&nbsp;NAM</div>
+                            <div class="underline-container">
+                                <div class="bold">Độc lập - Tự do - Hạnh phúc</div>
+                                <div class="underline-short"></div>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
             <div class="main-title">HỢP ĐỒNG</div>
             <div class="sub-title">${escapeHTML(mainTitleText)}</div>
             <div class="location-title">${escapeHTML(locationText)}</div>
