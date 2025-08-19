@@ -84,7 +84,8 @@ function numberToWords(num) {
  */
 function calculateAreaBased(service, area) {
     for (const tier of service.tiers) {
-        if (area < tier.max_area) return tier.price;
+        // *** THAY ĐỔI QUAN TRỌNG: Sửa từ '<' thành '<=' để bao gồm cả cận trên của bậc giá ***
+        if (area <= tier.max_area) return tier.price;
     }
     return service.tiers[service.tiers.length - 1].price;
 }
