@@ -24,21 +24,21 @@ function generateReceiptHTML(data) {
         return `
             <div class="header-two-cols">
                 <div class="col header-left">
-                    VĂN PHÒNG ĐĂNG KÝ ĐẤT ĐAI<br>
-                    <div style="display: inline-block;">
-                        <b>TỈNH ĐỒNG NAI – CN LONG KHÁNH</b>
-                        <div class="header-underline"></div>
+                    <div class="bold">VĂN PHÒNG ĐĂNG KÝ ĐẤT ĐAI</div>
+                    <div class="underline-container">
+                        <div class="bold">TỈNH ĐỒNG NAI – CN LONG KHÁNH</div>
+                        <div class="underline-short"></div>
                     </div>
                 </div>
                 <div class="col header-right">
-                    <div class="quoctitle"><b>CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</b></div>
-                    <div style="display: inline-block;">
-                        <div class="slogan"><b>Độc lập – Tự do – Hạnh phúc</b></div>
-                        <div class="header-underline"></div>
+                    <div class="bold quoctitle">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</div>
+                    <div class="underline-container">
+                        <div class="bold slogan">Độc lập – Tự do – Hạnh phúc</div>
+                        <div class="underline-short"></div>
                     </div>
                 </div>
             </div>
-            <div class="ngay-thang">${escapeHTML(data.place || "TP.Long Khánh")}, ngày ${dateObj.ngay} tháng ${dateObj.thang} năm ${dateObj.nam}</div>
+            <div class="ngay-thang">${data.place || "TP.Long Khánh"}, ngày ${dateObj.ngay} tháng ${dateObj.thang} năm ${dateObj.nam}</div>
             <div class="giay-title">GIẤY TIẾP NHẬN HỒ SƠ VÀ HẸN TRẢ KẾT QUẢ</div>
             <span class="lien-label-below">(Liên ${lienSo}: ${label})</span>
             <div style="margin-bottom:5px;">Văn Phòng Đăng ký đất đai Tỉnh Đồng Nai – Chi nhánh Long Khánh</div>
@@ -86,7 +86,7 @@ function generateReceiptHTML(data) {
     <head>
         <title>Giấy Tiếp Nhận Hồ Sơ</title>
         <meta charset="UTF-8">
-        <style>@page{size:A4 landscape;margin:1cm}body{font-family:'Times New Roman',serif;font-size:11pt;color:#000;margin:0;padding:0;display:flex}.receipt-page{width:50%;height:100%;box-sizing:border-box;padding:0 5px}.receipt-page.left{border-right:1px dashed #999;padding-right:10px}.header-two-cols{display:flex;justify-content:space-between;text-align:center;font-size:9.5pt;margin-left:-15px;margin-right:-15px}.header-left,.header-right{flex-basis:50%}.header-underline{border-top:1px solid #000;width:80%;margin:1px auto 0 auto}.quoctitle,.slogan{font-weight:700}.ngay-thang{text-align:right;font-style:italic;margin-top:5px}.giay-title{text-align:center;font-weight:700;font-size:14pt;margin:15px 0 0 0}.lien-label-below{display:block;text-align:center;font-style:italic;margin-bottom:10px}table.data{width:100%;border-collapse:collapse;margin-top:5px;font-size:10pt}table.data th,table.data td{border:1px solid #333;padding:4px}table.data th{text-align:center;font-weight:700}.footer-table{width:100%;table-layout:fixed}.footer-table td{width:33.33%}.footer-table .footer-titles td{font-size:9.5pt}.center{text-align:center}.bold{font-weight:700}.sign-box td{height:60px}</style>
+        <style>@page{size:A4 landscape;margin:1cm}body{font-family:'Times New Roman',serif;font-size:11pt;color:#000;margin:0;padding:0;display:flex}.receipt-page{width:50%;height:100%;box-sizing:border-box;padding:0 5px}.receipt-page.left{border-right:1px dashed #999;padding-right:10px}.header-two-cols{display:flex;justify-content:space-between;text-align:center;font-size:9.5pt;margin-left:-15px;margin-right:-15px}.header-left,.header-right{flex-basis:50%}.underline-container{display:inline-block;text-align:center}.underline-short{border-top:1px solid #000;width:67%;margin:0 auto}.quoctitle,.slogan{font-weight:700}.ngay-thang{text-align:right;font-style:italic;margin-top:5px}.giay-title{text-align:center;font-weight:700;font-size:14pt;margin:15px 0 0 0}.lien-label-below{display:block;text-align:center;font-style:italic;margin-bottom:10px}table.data{width:100%;border-collapse:collapse;margin-top:5px;font-size:10pt}table.data th,table.data td{border:1px solid #333;padding:4px}table.data th{text-align:center;font-weight:700}.footer-table{width:100%;table-layout:fixed}.footer-table td{width:33.33%}.footer-table .footer-titles td{font-size:9.5pt}.center{text-align:center}.bold{font-weight:700}.sign-box td{height:60px}</style>
     </head>
     <body>
         <div class="receipt-page left">
