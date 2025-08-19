@@ -42,12 +42,13 @@ function generateControlSheetHTML(data) {
         <meta charset="UTF-8">
         <style>
             @page { size: A4 portrait; margin: 1cm; }
-            body { font-family: 'Times New Roman', serif; font-size: 12pt; color: #000; line-height: 1.0; }
+            body { font-family: 'Times New Roman', serif; font-size: 12pt; color: #000; line-height: 1.2; }
             .bold { font-weight: bold; }
             .center { text-align: center; }
-            .header { display: flex; justify-content: space-between; font-size: 10pt; line-height: 1.0; }
+            .header { display: flex; justify-content: space-between; font-size: 10pt; line-height: 1.2; }
             .header .left, .header .right { width: 50%; text-align: center; }
-            .header .underline { border-top: 1px solid black; width: 60%; margin: 0 auto; }
+            .underline-container { display: inline-block; text-align: center; }
+            .underline-short { border-top: 1px solid black; width: 67%; margin: 0 auto; }
             .info {
                 font-size: 12pt;
                 line-height: 1.1;
@@ -57,13 +58,6 @@ function generateControlSheetHTML(data) {
                 margin-top: 10pt;
                 font-size: 12pt;
                 line-height: 1.1;
-            }
-            .date-place {
-                text-align: right;
-                font-style: italic;
-                margin-top: 18px;
-                font-size: 12pt;
-                line-height: 1.0;
             }
             .main-title { text-align: center; font-weight: bold; font-size: 12pt; margin-top: 20px; margin-bottom: 20px; }
             .main-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 10pt; table-layout: fixed; }
@@ -101,16 +95,19 @@ function generateControlSheetHTML(data) {
         <div class="header">
             <div class="left">
                 <span class="bold">VĂN PHÒNG ĐĂNG KÝ ĐẤT ĐAI</span><br>
-                <span class="bold">TỈNH ĐỒNG NAI – CHI NHÁNH LONG KHÁNH</span>
-                <div class="underline"></div>
+                <div class="underline-container">
+                    <span class="bold">TỈNH ĐỒNG NAI – CHI NHÁNH LONG KHÁNH</span>
+                    <div class="underline-short"></div>
+                </div>
             </div>
             <div class="right">
                 <span class="bold">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</span><br>
-                <span class="bold">Độc lập – Tự do – Hạnh phúc</span>
-                <div class="underline"></div>
+                <div class="underline-container">
+                    <span class="bold">Độc lập – Tự do – Hạnh phúc</span>
+                    <div class="underline-short"></div>
+                </div>
             </div>
         </div>
-        <div class="date-place">${escapeHTML(data.place)}, ngày ${ngayNhanObj.ngay} tháng ${ngayNhanObj.thang} năm ${ngayNhanObj.nam}</div>
         <div class="main-title">PHIẾU KIỂM SOÁT QUÁ TRÌNH GIẢI QUYẾT HỒ SƠ</div>
         <div class="info">
             <p><span class="bold">Chủ hồ sơ ông (bà):</span> ${escapeHTML(data.chuHoSo)}</p>
