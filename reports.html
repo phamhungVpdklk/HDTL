@@ -1,15 +1,33 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="vi">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0b1021"  media="(prefers-color-scheme: dark)">
   <title>Báo cáo – QL Số HĐ & TL</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-  <style>.card{border:1px solid #e5e7eb;border-radius:1rem;padding:1rem;background:#fff}</style>
+  <style>
+    :root{ --tap: 44px; }
+    button { min-height: var(--tap); }
+    input, select { min-height: 42px; }
+    @media (max-width: 640px){
+      html{ font-size: 15px; }
+      .card{ padding:.8rem; }
+      canvas{ max-height: 220px; }
+      .auth-bar{ position: sticky; top: 0; background:#fff; z-index: 40; padding:.5rem; border-bottom:1px solid #e5e7eb;}
+    }
+    @media (prefers-reduced-motion: reduce){
+      *{ animation-duration:0.01ms !important; animation-iteration-count:1 !important; transition-duration:0.01ms !important; scroll-behavior:auto !important;}
+    }
+    .card{border:1px solid #e5e7eb;border-radius:1rem;padding:1rem;background:#fff}
+  </style>
 </head>
 <body class="bg-slate-50">
+  <!-- Navbar -->
   <header class="sticky top-0 z-10 bg-white/90 backdrop-blur border-b border-slate-200">
     <div class="max-w-6xl mx-auto px-3 py-3 flex items-center gap-3">
       <div class="flex-1 flex items-center gap-3">
@@ -19,9 +37,9 @@
           <a class="hover:text-slate-900" href="./reports.html">Báo cáo</a>
         </nav>
       </div>
-      <div class="flex items-center gap-2">
-        <input id="email" class="hidden sm:block border rounded px-3 py-2" placeholder="email" />
-        <input id="password" type="password" class="hidden sm:block border rounded px-3 py-2" placeholder="mật khẩu" />
+      <div class="auth-bar flex items-center gap-2">
+        <input id="email" class="hidden sm:block border rounded px-3 py-2" placeholder="email" autocomplete="username" />
+        <input id="password" type="password" class="hidden sm:block border rounded px-3 py-2" placeholder="mật khẩu" autocomplete="current-password" />
         <button id="btnLogin" class="px-4 py-2 rounded bg-blue-600 text-white">Đăng nhập</button>
         <button id="btnLogout" class="px-4 py-2 rounded bg-slate-100">Đăng xuất</button>
       </div>
@@ -29,14 +47,15 @@
   </header>
 
   <main class="max-w-6xl mx-auto px-3 py-6">
+    <!-- Filters -->
     <section class="card">
-      <div class="grid md:grid-cols-6 gap-3">
-        <div><label class="text-sm">Từ ngày</label><input id="from" type="date" class="border rounded w-full px-3 py-2"/></div>
-        <div><label class="text-sm">Đến ngày</label><input id="to" type="date" class="border rounded w-full px-3 py-2"/></div>
-        <div><label class="text-sm">Phường</label>
+      <div class="grid grid-cols-2 sm:grid-cols-6 gap-3">
+        <div><label class="text-sm text-slate-600">Từ ngày</label><input id="from" type="date" class="border rounded w-full px-3 py-2"/></div>
+        <div><label class="text-sm text-slate-600">Đến ngày</label><input id="to" type="date" class="border rounded w-full px-3 py-2"/></div>
+        <div><label class="text-sm text-slate-600">Phường</label>
           <select id="ward" class="border rounded w-full px-3 py-2"><option value="">Tất cả</option><option>LK</option><option>HG</option><option>BL</option><option>BV</option><option>XL</option></select>
         </div>
-        <div><label class="text-sm">Kỳ</label>
+        <div><label class="text-sm text-slate-600">Kỳ</label>
           <select id="grain" class="border rounded w-full px-3 py-2">
             <option value="day">Theo ngày</option>
             <option value="week">Theo tuần</option>
@@ -51,6 +70,7 @@
       </div>
     </section>
 
+    <!-- KPI cards -->
     <section class="grid md:grid-cols-4 gap-3 mt-4">
       <div class="card"><div class="text-slate-500">Tổng HĐ</div><div id="kpiHD" class="text-2xl font-bold">–</div></div>
       <div class="card"><div class="text-slate-500">Tổng TL</div><div id="kpiTL" class="text-2xl font-bold">–</div></div>
@@ -58,13 +78,15 @@
       <div class="card"><div class="text-slate-500">TL/Ngày TB</div><div id="kpiTLavg" class="text-2xl font-bold">–</div></div>
     </section>
 
+    <!-- Charts -->
     <section class="grid md:grid-cols-2 gap-3 mt-4">
       <div class="card"><h3 class="font-semibold mb-2">Hợp đồng</h3><canvas id="chartHD" height="140"></canvas></div>
       <div class="card"><h3 class="font-semibold mb-2">Thanh lý</h3><canvas id="chartTL" height="140"></canvas></div>
     </section>
 
+    <!-- Table -->
     <section class="card mt-4">
-      <h3 class="font-semibold mb-2">Bảng dữ liệu</h3>
+      <h3 class="font-semibold mb-2">Bảng dữ liệu (tổng hợp theo kỳ)</h3>
       <div class="overflow-x-auto">
         <table class="min-w-full" id="reportTable">
           <thead class="text-left text-slate-500"><tr><th class="p-2">Kỳ</th><th class="p-2">HĐ</th><th class="p-2">TL</th></tr></thead>
@@ -82,12 +104,15 @@
     const gi=id=>document.getElementById(id);
     let charts={hd:null,tl:null};
 
+    const getSession = async()=> (await sb.auth.getSession()).data.session;
+    const getRole = (s)=> s?.user?.app_metadata?.role || "";
+
     // Chặn truy cập nếu không phải admin/report_admin
     async function guardReports(){
-      const {data:{session}}=await sb.auth.getSession();
-      if(!session) return; // chưa login → vẫn nhìn thấy form, sẽ bị yêu cầu login khi chạy
-      const role=session.user.app_metadata?.role;
-      if(role!=='admin' && role!=='report_admin'){
+      const s = await getSession();
+      if (!s) return; // chưa đăng nhập → sẽ bị yêu cầu khi ấn "Chạy báo cáo"
+      const role = getRole(s);
+      if (role!=='admin' && role!=='report_admin'){
         document.body.innerHTML = `
           <div style="max-width:720px;margin:40px auto;font-family:system-ui">
             <h1 style="font-size:20px;font-weight:700">Truy cập bị hạn chế</h1>
@@ -112,8 +137,8 @@
     }
 
     async function requireLogin(){
-      const { data: { session } } = await sb.auth.getSession();
-      if (!session){
+      const s = await getSession();
+      if (!s){
         const email = gi('email').value.trim(), password = gi('password').value;
         if (!email || !password) { alert("Chưa đăng nhập"); return false; }
         const { error } = await sb.auth.signInWithPassword({ email, password });
@@ -157,8 +182,16 @@
 
       const labels=rows.map(r=>r.key), hd=rows.map(r=>r.hd), tl=rows.map(r=>r.tl);
       charts.hd?.destroy(); charts.tl?.destroy();
-      charts.hd=new Chart(document.getElementById('chartHD'), { type:'bar', data:{ labels, datasets:[{ label:'Hợp đồng', data: hd }] } });
-      charts.tl=new Chart(document.getElementById('chartTL'), { type:'bar', data:{ labels, datasets:[{ label:'Thanh lý', data: tl }] } });
+      charts.hd=new Chart(document.getElementById('chartHD'), {
+        type:'bar',
+        data:{ labels, datasets:[{ label:'Hợp đồng', data: hd }] },
+        options:{ maintainAspectRatio:false, plugins:{ legend:{ display:false } }, scales:{ x:{ ticks:{ maxRotation:60, autoSkip:true } } } }
+      });
+      charts.tl=new Chart(document.getElementById('chartTL'), {
+        type:'bar',
+        data:{ labels, datasets:[{ label:'Thanh lý', data: tl }] },
+        options:{ maintainAspectRatio:false, plugins:{ legend:{ display:false } }, scales:{ x:{ ticks:{ maxRotation:60, autoSkip:true } } } }
+      });
 
       window.__reportRows=rows;
       window.__reportMeta={from,to,ward,grain,generatedAt:new Date().toISOString()};
@@ -188,9 +221,8 @@
     const y0=new Date(today.getFullYear(),0,1).toISOString().slice(0,10);
     gi('from').value=y0; gi('to').value=today.toISOString().slice(0,10);
 
-    document.getElementById('btnLogin').onclick=async()=>{ const ok=await requireLogin(); if(ok) runReport(); };
+    document.getElementById('btnLogin').onclick=async()=>{ const ok=await (async()=>{ const s=await getSession(); if (s) return true; const email=gi('email').value.trim(), password=gi('password').value; if(!email||!password){ alert("Chưa đăng nhập"); return false; } const {error}=await sb.auth.signInWithPassword({email,password}); if(error){ alert(error.message); return false;} return true; })(); if(ok) runReport(); };
     document.getElementById('btnLogout').onclick=async()=>{ await sb.auth.signOut(); };
   </script>
 </body>
 </html>
-
