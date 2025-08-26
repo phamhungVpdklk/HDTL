@@ -4,59 +4,62 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="color-scheme" content="light dark" />
-  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
-  <meta name="theme-color" content="#0b1021"  media="(prefers-color-scheme: dark)">
   <title>Báo cáo – QL Số HĐ & TL</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <style>
-    :root{ --tap: 44px; }
-    button { min-height: var(--tap); }
-    input, select { min-height: 42px; }
+    :root{
+      --bg: #f6f7fb; --text:#0f172a; --muted:#475569; --line:#e2e8f0;
+      --primary:#2563eb; --card:#fff; --tap:44px;
+    }
+    html,body{ background:var(--bg); color:var(--text) }
+    .flat{ border:1px solid var(--line); border-radius:12px; background:var(--card) }
+    input,select,button{ min-height: var(--tap) }
+    .btn{ border:1px solid var(--line); border-radius:10px; padding:.55rem 1rem; font-weight:600; background:#fff }
+    .btn-primary{ background: var(--primary); color:#fff; border-color: var(--primary) }
+    .btn-ghost{ background:#f8fafc }
     @media (max-width: 640px){
-      html{ font-size: 15px; }
-      .card{ padding:.8rem; }
-      canvas{ max-height: 220px; }
-      .auth-bar{ position: sticky; top: 0; background:#fff; z-index: 40; padding:.5rem; border-bottom:1px solid #e5e7eb;}
+      html{ font-size:15px }
+      .auth-bar{ position: sticky; top: 0; background:#fff; z-index: 40; padding:.5rem; border-bottom:1px solid var(--line);}
+      canvas{ max-height: 220px }
     }
-    @media (prefers-reduced-motion: reduce){
-      *{ animation-duration:0.01ms !important; animation-iteration-count:1 !important; transition-duration:0.01ms !important; scroll-behavior:auto !important;}
-    }
-    .card{border:1px solid #e5e7eb;border-radius:1rem;padding:1rem;background:#fff}
+    .kpi{ display:flex; flex-direction:column; gap:.35rem }
+    .kpi .label{ color:var(--muted); font-size:13px }
+    .kpi .val{ font-size:1.5rem; font-weight:800 }
   </style>
 </head>
-<body class="bg-slate-50">
-  <!-- Navbar -->
-  <header class="sticky top-0 z-10 bg-white/90 backdrop-blur border-b border-slate-200">
+<body>
+  <!-- Topbar -->
+  <header class="border-b" style="border-color:#e2e8f0;background:#fff;">
     <div class="max-w-6xl mx-auto px-3 py-3 flex items-center gap-3">
       <div class="flex-1 flex items-center gap-3">
-        <span class="text-xl font-bold">Báo cáo – QL Số HĐ & TL</span>
-        <nav class="hidden sm:flex gap-4 ml-4 text-slate-600">
-          <a class="hover:text-slate-900" href="./index.html">Trang chính</a>
-          <a class="hover:text-slate-900" href="./reports.html">Báo cáo</a>
+        <span class="text-lg md:text-xl font-bold">Báo cáo – QL Số HĐ & TL</span>
+        <nav class="hidden sm:flex gap-3 text-[15px]">
+          <a class="underline-offset-4 hover:underline" href="./index.html">Trang chính</a>
+          <a class="underline-offset-4 hover:underline" href="./reports.html">Báo cáo</a>
         </nav>
       </div>
       <div class="auth-bar flex items-center gap-2">
-        <input id="email" class="hidden sm:block border rounded px-3 py-2" placeholder="email" autocomplete="username" />
-        <input id="password" type="password" class="hidden sm:block border rounded px-3 py-2" placeholder="mật khẩu" autocomplete="current-password" />
-        <button id="btnLogin" class="px-4 py-2 rounded bg-blue-600 text-white">Đăng nhập</button>
-        <button id="btnLogout" class="px-4 py-2 rounded bg-slate-100">Đăng xuất</button>
+        <input id="email" class="hidden sm:block flat px-3 py-2 w-64" placeholder="email" autocomplete="username" />
+        <input id="password" type="password" class="hidden sm:block flat px-3 py-2 w-48" placeholder="mật khẩu" autocomplete="current-password" />
+        <button id="btnLogin" class="btn btn-primary">Đăng nhập</button>
+        <button id="btnLogout" class="btn btn-ghost">Đăng xuất</button>
       </div>
     </div>
   </header>
 
   <main class="max-w-6xl mx-auto px-3 py-6">
     <!-- Filters -->
-    <section class="card">
+    <section class="flat p-4">
       <div class="grid grid-cols-2 sm:grid-cols-6 gap-3">
-        <div><label class="text-sm text-slate-600">Từ ngày</label><input id="from" type="date" class="border rounded w-full px-3 py-2"/></div>
-        <div><label class="text-sm text-slate-600">Đến ngày</label><input id="to" type="date" class="border rounded w-full px-3 py-2"/></div>
+        <div><label class="text-sm text-slate-600">Từ ngày</label><input id="from" type="date" class="flat px-3 py-2 w-full"/></div>
+        <div><label class="text-sm text-slate-600">Đến ngày</label><input id="to" type="date" class="flat px-3 py-2 w-full"/></div>
         <div><label class="text-sm text-slate-600">Phường</label>
-          <select id="ward" class="border rounded w-full px-3 py-2"><option value="">Tất cả</option><option>LK</option><option>HG</option><option>BL</option><option>BV</option><option>XL</option></select>
+          <select id="ward" class="flat px-3 py-2 w-full"><option value="">Tất cả</option><option>LK</option><option>HG</option><option>BL</option><option>BV</option><option>XL</option></select>
         </div>
         <div><label class="text-sm text-slate-600">Kỳ</label>
-          <select id="grain" class="border rounded w-full px-3 py-2">
+          <select id="grain" class="flat px-3 py-2 w-full">
             <option value="day">Theo ngày</option>
             <option value="week">Theo tuần</option>
             <option value="month" selected>Theo tháng</option>
@@ -64,37 +67,58 @@
           </select>
         </div>
         <div class="flex items-end gap-2">
-          <button id="btnRun" class="px-4 py-2 rounded bg-blue-600 text-white">Chạy báo cáo</button>
-          <button id="btnExport" class="px-4 py-2 rounded bg-emerald-600 text-white">Xuất Excel</button>
+          <button id="btnRun" class="btn btn-primary">Chạy báo cáo</button>
+          <button id="btnExport" class="btn">Xuất Excel</button>
         </div>
       </div>
     </section>
 
-    <!-- KPI cards -->
+    <!-- KPIs -->
     <section class="grid md:grid-cols-4 gap-3 mt-4">
-      <div class="card"><div class="text-slate-500">Tổng HĐ</div><div id="kpiHD" class="text-2xl font-bold">–</div></div>
-      <div class="card"><div class="text-slate-500">Tổng TL</div><div id="kpiTL" class="text-2xl font-bold">–</div></div>
-      <div class="card"><div class="text-slate-500">HĐ/Ngày TB</div><div id="kpiHDavg" class="text-2xl font-bold">–</div></div>
-      <div class="card"><div class="text-slate-500">TL/Ngày TB</div><div id="kpiTLavg" class="text-2xl font-bold">–</div></div>
+      <div class="flat p-3 kpi"><div class="label">Tổng HĐ</div><div id="kpiHD" class="val">–</div></div>
+      <div class="flat p-3 kpi"><div class="label">Tổng TL</div><div id="kpiTL" class="val">–</div></div>
+      <div class="flat p-3 kpi"><div class="label">HĐ/Ngày TB</div><div id="kpiHDavg" class="val">–</div></div>
+      <div class="flat p-3 kpi"><div class="label">TL/Ngày TB</div><div id="kpiTLavg" class="val">–</div></div>
     </section>
 
     <!-- Charts -->
     <section class="grid md:grid-cols-2 gap-3 mt-4">
-      <div class="card"><h3 class="font-semibold mb-2">Hợp đồng</h3><canvas id="chartHD" height="140"></canvas></div>
-      <div class="card"><h3 class="font-semibold mb-2">Thanh lý</h3><canvas id="chartTL" height="140"></canvas></div>
+      <div class="flat p-4"><h3 class="font-semibold mb-2">Hợp đồng</h3><canvas id="chartHD" height="160"></canvas></div>
+      <div class="flat p-4"><h3 class="font-semibold mb-2">Thanh lý</h3><canvas id="chartTL" height="160"></canvas></div>
     </section>
 
     <!-- Table -->
-    <section class="card mt-4">
+    <section class="flat p-4 mt-4">
       <h3 class="font-semibold mb-2">Bảng dữ liệu (tổng hợp theo kỳ)</h3>
       <div class="overflow-x-auto">
-        <table class="min-w-full" id="reportTable">
+        <table class="min-w-full">
           <thead class="text-left text-slate-500"><tr><th class="p-2">Kỳ</th><th class="p-2">HĐ</th><th class="p-2">TL</th></tr></thead>
           <tbody id="reportBody"></tbody>
         </table>
       </div>
     </section>
   </main>
+
+  <!-- Login Modal -->
+  <dialog id="loginDialog" class="rounded-xl p-0 w-[92vw] max-w-md">
+    <form id="loginForm" method="dialog" class="p-5">
+      <h3 class="text-lg font-semibold mb-3">Đăng nhập</h3>
+      <div class="space-y-3">
+        <div>
+          <label class="text-sm text-slate-600">Email</label>
+          <input id="emailModal" class="flat px-3 py-2 w-full" placeholder="vd: admin1@vp.local" autocomplete="username" />
+        </div>
+        <div>
+          <label class="text-sm text-slate-600">Mật khẩu</label>
+          <input id="passwordModal" type="password" class="flat px-3 py-2 w-full" placeholder="mật khẩu" autocomplete="current-password" />
+        </div>
+      </div>
+      <div class="mt-4 flex justify-end gap-2">
+        <button type="button" id="btnCloseLogin" class="btn btn-ghost">Huỷ</button>
+        <button type="submit" id="btnDoLogin" class="btn btn-primary">Đăng nhập</button>
+      </div>
+    </form>
+  </dialog>
 
   <script type="module">
     import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
@@ -107,10 +131,10 @@
     const getSession = async()=> (await sb.auth.getSession()).data.session;
     const getRole = (s)=> s?.user?.app_metadata?.role || "";
 
-    // Chặn truy cập nếu không phải admin/report_admin
+    // Guard
     async function guardReports(){
       const s = await getSession();
-      if (!s) return; // chưa đăng nhập → sẽ bị yêu cầu khi ấn "Chạy báo cáo"
+      if (!s) return; // sẽ yêu cầu login khi chạy
       const role = getRole(s);
       if (role!=='admin' && role!=='report_admin'){
         document.body.innerHTML = `
@@ -122,6 +146,40 @@
       }
     }
     guardReports();
+
+    // Modal login
+    const dlg = gi('loginDialog');
+    const emailModal = gi('emailModal');
+    const passwordModal = gi('passwordModal');
+    const openLoginDialog = ()=>{ if(!dlg.open) dlg.showModal(); setTimeout(()=>emailModal.focus(), 30); };
+    const closeLoginDialog = ()=>{ if(dlg.open) dlg.close(); };
+    gi('btnCloseLogin').onclick = closeLoginDialog;
+
+    document.getElementById('loginForm').addEventListener('submit', async (e)=>{
+      e.preventDefault();
+      const email = emailModal.value.trim(), password = passwordModal.value;
+      try{
+        const { error } = await sb.auth.signInWithPassword({ email, password });
+        if (error) throw error;
+        closeLoginDialog();
+        await runReport();
+      }catch(err){ alert(err.message); }
+    });
+
+    // Header login: desktop direct / mobile modal
+    document.getElementById('btnLogin').onclick = async ()=>{
+      const desktop = window.matchMedia('(min-width: 640px)').matches;
+      if (desktop){
+        const email = gi('email').value.trim(), password = gi('password').value;
+        if (!email || !password){ alert("Chưa nhập email/mật khẩu"); return; }
+        const { error } = await sb.auth.signInWithPassword({ email, password });
+        if (error){ alert(error.message); return; }
+        await runReport();
+      }else{
+        openLoginDialog();
+      }
+    };
+    document.getElementById('btnLogout').onclick = async ()=>{ await sb.auth.signOut(); };
 
     function fmtKey(d, grain){
       const dt = new Date(d);
@@ -139,10 +197,8 @@
     async function requireLogin(){
       const s = await getSession();
       if (!s){
-        const email = gi('email').value.trim(), password = gi('password').value;
-        if (!email || !password) { alert("Chưa đăng nhập"); return false; }
-        const { error } = await sb.auth.signInWithPassword({ email, password });
-        if (error) { alert(error.message); return false; }
+        openLoginDialog();
+        return false;
       }
       return true;
     }
@@ -200,18 +256,9 @@
     function exportExcel(){
       const rows=window.__reportRows||[];
       const meta=window.__reportMeta||{};
-      const sheet=[
-        ["Báo cáo QL Số HĐ & TL"],
-        ["Kỳ:", meta.grain],
-        ["Từ ngày:", meta.from, "Đến ngày:", meta.to, "Phường:", meta.ward || "Tất cả"],
-        [],
-        ["Kỳ","Hợp đồng","Thanh lý"],
-        ...rows.map(r=>[r.key, r.hd, r.tl]),
-      ];
-      const wb=XLSX.utils.book_new();
-      const ws=XLSX.utils.aoa_to_sheet(sheet);
-      XLSX.utils.book_append_sheet(wb, ws, "BaoCao");
-      XLSX.writeFile(wb, "BaoCao_HD_TL.xlsx");
+      const sheet=[["Báo cáo QL Số HĐ & TL"],["Kỳ:", meta.grain],["Từ ngày:", meta.from, "Đến ngày:", meta.to, "Phường:", meta.ward || "Tất cả"],[],["Kỳ","Hợp đồng","Thanh lý"],...rows.map(r=>[r.key, r.hd, r.tl])];
+      const wb=XLSX.utils.book_new(); const ws=XLSX.utils.aoa_to_sheet(sheet);
+      XLSX.utils.book_append_sheet(wb, ws, "BaoCao"); XLSX.writeFile(wb, "BaoCao_HD_TL.xlsx");
     }
 
     document.getElementById('btnRun').onclick=runReport;
@@ -220,9 +267,6 @@
     const today=new Date();
     const y0=new Date(today.getFullYear(),0,1).toISOString().slice(0,10);
     gi('from').value=y0; gi('to').value=today.toISOString().slice(0,10);
-
-    document.getElementById('btnLogin').onclick=async()=>{ const ok=await (async()=>{ const s=await getSession(); if (s) return true; const email=gi('email').value.trim(), password=gi('password').value; if(!email||!password){ alert("Chưa đăng nhập"); return false; } const {error}=await sb.auth.signInWithPassword({email,password}); if(error){ alert(error.message); return false;} return true; })(); if(ok) runReport(); };
-    document.getElementById('btnLogout').onclick=async()=>{ await sb.auth.signOut(); };
   </script>
 </body>
 </html>
