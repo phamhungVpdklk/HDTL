@@ -77,7 +77,7 @@
   <script type="module">
     import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
     const SUPABASE_URL="https://nefjhmhzfuuwxxhhjaei.supabase.co";
-    const SUPABASE_ANON_KEY="<PASTE_YOUR_ANON_KEY_HERE>";
+    const SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5lZmpobWh6ZnV1d3h4aGhqYWVpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTYxMTI3MzQsImV4cCI6MjA3MTY4ODczNH0.2vT6kw0uvSTr49cGLSrsZbT6qtPJ_mYzXsu7PGJpGrY";
     const sb=createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
     const gi=id=>document.getElementById(id);
     let charts={hd:null,tl:null};
@@ -193,3 +193,4 @@
   </script>
 </body>
 </html>
+
