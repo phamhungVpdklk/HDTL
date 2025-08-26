@@ -12,18 +12,17 @@
     :root{ --bg:#f6f7fb; --text:#0f172a; --muted:#475569; --line:#e2e8f0; --primary:#2563eb; --card:#fff; --tap:44px }
     html,body{ background:var(--bg); color:var(--text) }
     .flat{ border:1px solid var(--line); border-radius:12px; background:var(--card) }
-    input,select,button{ min-height: var(--tap) }
+    input,select,button{ min-height:var(--tap) }
     .btn{ border:1px solid var(--line); border-radius:10px; padding:.55rem 1rem; font-weight:600; background:#fff }
     .btn-primary{ background:var(--primary); color:#fff; border-color:var(--primary) }
     .btn-ghost{ background:#f8fafc }
     .kpi{ display:flex; flex-direction:column; gap:.35rem }
     .kpi .label{ color:var(--muted); font-size:13px }
     .kpi .val{ font-size:1.5rem; font-weight:800 }
-    @media (max-width: 640px){ html{ font-size:15px } .auth-bar{ position:sticky; top:0; background:#fff; z-index:40; padding:.5rem; border-bottom:1px solid var(--line)} canvas{ max-height:220px } }
+    @media (max-width:640px){ html{ font-size:15px } .auth-bar{ position:sticky; top:0; background:#fff; z-index:40; padding:.5rem; border-bottom:1px solid var(--line)} canvas{ max-height:220px } }
   </style>
 </head>
 <body>
-  <!-- Topbar -->
   <header class="border-b" style="border-color:#e2e8f0;background:#fff;">
     <div class="max-w-6xl mx-auto px-3 py-3 flex items-center gap-3">
       <div class="flex-1 flex items-center gap-3">
@@ -43,7 +42,6 @@
   </header>
 
   <main class="max-w-6xl mx-auto px-3 py-6">
-    <!-- Filters -->
     <section class="flat p-4">
       <div class="grid grid-cols-2 sm:grid-cols-6 gap-3">
         <div><label class="text-sm text-slate-600">Từ ngày</label><input id="from" type="date" class="flat px-3 py-2 w-full"/></div>
@@ -66,7 +64,6 @@
       </div>
     </section>
 
-    <!-- KPIs -->
     <section class="grid md:grid-cols-4 gap-3 mt-4">
       <div class="flat p-3 kpi"><div class="label">Tổng HĐ</div><div id="kpiHD" class="val">–</div></div>
       <div class="flat p-3 kpi"><div class="label">Tổng TL</div><div id="kpiTL" class="val">–</div></div>
@@ -74,13 +71,11 @@
       <div class="flat p-3 kpi"><div class="label">TL/Ngày TB</div><div id="kpiTLavg" class="val">–</div></div>
     </section>
 
-    <!-- Charts -->
     <section class="grid md:grid-cols-2 gap-3 mt-4">
       <div class="flat p-4"><h3 class="font-semibold mb-2">Hợp đồng</h3><canvas id="chartHD" height="160"></canvas></div>
       <div class="flat p-4"><h3 class="font-semibold mb-2">Thanh lý</h3><canvas id="chartTL" height="160"></canvas></div>
     </section>
 
-    <!-- Table -->
     <section class="flat p-4 mt-4">
       <h3 class="font-semibold mb-2">Bảng dữ liệu (tổng hợp theo kỳ)</h3>
       <div class="overflow-x-auto">
@@ -110,19 +105,27 @@
   <script type="module">
     import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
     const SUPABASE_URL="https://nefjhmhzfuuwxxhhjaei.supabase.co";
-    const SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5lZmpobWh6ZnV1d3h4aGhqYWVpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTYxMTI3MzQsImV4cCI6MjA3MTY4ODczNH0.2vT6kw0uvSTr49cGLSrsZbT6qtPJ_mYzXsu7PGJpGrY";
+    const SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5lZmpobWh6ZnV1d3h4aGhqYWVpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTYxMTI3MzQsImV4cCI6MjA3MTY4ODczNH0.2vT6kw0uvSTr49cGLSrsZbT6qtPJ_mYzXsu7PGJpGrY"; /* ← dán ANON KEY */
     const sb=createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
     const gi=id=>document.getElementById(id);
     let charts={hd:null,tl:null};
 
     const getSession = async()=> (await sb.auth.getSession()).data.session;
-    const getRole = (s)=> s?.user?.app_metadata?.role || "";
+
+    // NEW: lấy role từ bảng app_role
+    async function fetchRole(){
+      const { data, error } = await sb.rpc('get_my_role');
+      if (error){ console.error(error); return ''; }
+      return data || '';
+    }
 
     async function guardReports(){
       const s = await getSession();
-      if (!s) return; // chưa đăng nhập → bấm "Chạy báo cáo" sẽ yêu cầu
-      const role = getRole(s);
-      if (role!=='admin' && role!=='report_admin'){
+      if (!s) return; // chưa đăng nhập → có thể đăng nhập tại chỗ
+      const email = (s.user.email || '').toLowerCase();
+      const role  = await fetchRole();
+      const allowed = (role==='admin'||role==='report_admin'|| email==='admin@vp.local'||email==='admin1@vp.local');
+      if (!allowed){
         document.body.innerHTML = `
           <div style="max-width:720px;margin:40px auto;font-family:system-ui">
             <h1 style="font-size:20px;font-weight:700">Truy cập bị hạn chế</h1>
@@ -140,38 +143,31 @@
     gi('btnCloseLogin').onclick = closeLoginDialog;
     document.getElementById('loginForm').addEventListener('submit', async (e)=>{
       e.preventDefault();
-      try{
-        const { error } = await sb.auth.signInWithPassword({ email: emailModal.value.trim(), password: passwordModal.value });
-        if (error) throw error;
-        closeLoginDialog(); await runReport();
-      }catch(err){ console.error(err); alert(err.message||err); }
+      const { error } = await sb.auth.signInWithPassword({ email: emailModal.value.trim(), password: passwordModal.value });
+      if (error){ alert(error.message); return; }
+      closeLoginDialog(); await runReport();
     });
 
-    // Header login: desktop direct / mobile modal
     document.getElementById('btnLogin').onclick = async ()=>{
       const desktop = window.matchMedia('(min-width: 640px)').matches;
       if (desktop){
         const email = gi('email').value.trim(), password = gi('password').value;
-        if (!email || !password){ alert("Chưa nhập email/mật khẩu"); return; }
+        if(!email||!password){ alert("Chưa nhập email/mật khẩu"); return; }
         const { error } = await sb.auth.signInWithPassword({ email, password });
         if (error){ alert(error.message); return; }
         await runReport();
-      } else {
-        openLoginDialog();
-      }
+      } else openLoginDialog();
     };
     document.getElementById('btnLogout').onclick = async ()=>{ await sb.auth.signOut(); };
 
     function fmtKey(d, grain){
       const dt=new Date(d);
-      if (grain==='year') return String(dt.getFullYear());
+      if (grain==='year')  return String(dt.getFullYear());
       if (grain==='month') return dt.getFullYear()+"-"+String(dt.getMonth()+1).padStart(2,'0');
-      if (grain==='week'){
-        const t=new Date(dt); const day=(t.getDay()+6)%7; t.setDate(t.getDate()-day);
+      if (grain==='week'){ const t=new Date(dt); const day=(t.getDay()+6)%7; t.setDate(t.getDate()-day);
         const onejan=new Date(t.getFullYear(),0,1);
         const week=Math.ceil((((t-onejan)/86400000)+onejan.getDay()+1)/7);
-        return t.getFullYear()+"-W"+String(week).padStart(2,'0');
-      }
+        return t.getFullYear()+"-W"+String(week).padStart(2,'0'); }
       return dt.toISOString().slice(0,10);
     }
 
@@ -179,6 +175,7 @@
 
     async function runReport(){
       if(!await requireLogin()) return;
+
       const from=gi('from').value || new Date(new Date().getFullYear(),0,1).toISOString().slice(0,10);
       const to=gi('to').value || new Date().toISOString().slice(0,10);
       const ward=gi('ward').value; const grain=gi('grain').value;
