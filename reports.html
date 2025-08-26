@@ -11,28 +11,33 @@
   <style>
     :root{ --bg:#f6f7fb; --text:#0f172a; --muted:#475569; --line:#e2e8f0; --primary:#2563eb; --card:#fff; --tap:44px }
     html,body{ background:var(--bg); color:var(--text) }
-    .flat{ border:1px solid var(--line); border-radius:12px; background:var(--card) }
+    .flat{ border:1px solid var(--line); border-radius:14px; background:var(--card) }
     input,select,button{ min-height:var(--tap) }
-    .btn{ border:1px solid var(--line); border-radius:10px; padding:.55rem 1rem; font-weight:600; background:#fff }
+    .btn{ border:1px solid var(--line); border-radius:12px; padding:.55rem 1rem; font-weight:600; background:#fff }
     .btn-primary{ background:var(--primary); color:#fff; border-color:var(--primary) }
     .btn-ghost{ background:#f8fafc }
-    .kpi{ display:flex; flex-direction:column; gap:.35rem }
-    .kpi .label{ color:var(--muted); font-size:13px }
-    .kpi .val{ font-size:1.5rem; font-weight:800 }
-    @media (max-width:640px){ html{ font-size:15px } .auth-bar{ position:sticky; top:0; background:#fff; z-index:40; padding:.5rem; border-bottom:1px solid var(--line)} canvas{ max-height:220px } }
+    .kpi .label{ color:var(--muted); font-size:12px }
+    .kpi .val{ font-size:1.6rem; font-weight:800 }
+    .chip{ display:inline-flex; align-items:center; gap:.4rem; padding:.3rem .6rem; border:1px solid var(--line); border-radius:999px; background:#f1f5f9; color:#334155; font-size:.9rem }
+    .chart-box{ height:320px }             /* chiều cao cố định để chart không co giãn */
+    @media (max-width: 640px){
+      html{ font-size:15px }
+      .chart-box{ height:260px }
+    }
   </style>
 </head>
 <body>
+  <!-- Topbar -->
   <header class="border-b" style="border-color:#e2e8f0;background:#fff;">
     <div class="max-w-6xl mx-auto px-3 py-3 flex items-center gap-3">
       <div class="flex-1 flex items-center gap-3">
         <span class="text-lg md:text-xl font-bold">Báo cáo – QL Số HĐ & TL</span>
         <nav class="hidden sm:flex gap-3 text-[15px]">
           <a class="underline-offset-4 hover:underline" href="./index.html">Trang chính</a>
-          <a class="underline-offset-4 hover:underline" href="./reports.html">Báo cáo</a>
+          <span class="chip">Chỉ dành cho admin / report_admin</span>
         </nav>
       </div>
-      <div class="auth-bar flex items-center gap-2">
+      <div class="flex items-center gap-2">
         <input id="email" class="hidden sm:block flat px-3 py-2 w-64" placeholder="email" autocomplete="username" />
         <input id="password" type="password" class="hidden sm:block flat px-3 py-2 w-48" placeholder="mật khẩu" autocomplete="current-password" />
         <button id="btnLogin" class="btn btn-primary">Đăng nhập</button>
@@ -42,12 +47,15 @@
   </header>
 
   <main class="max-w-6xl mx-auto px-3 py-6">
+    <!-- Filters -->
     <section class="flat p-4">
       <div class="grid grid-cols-2 sm:grid-cols-6 gap-3">
         <div><label class="text-sm text-slate-600">Từ ngày</label><input id="from" type="date" class="flat px-3 py-2 w-full"/></div>
         <div><label class="text-sm text-slate-600">Đến ngày</label><input id="to" type="date" class="flat px-3 py-2 w-full"/></div>
         <div><label class="text-sm text-slate-600">Phường</label>
-          <select id="ward" class="flat px-3 py-2 w-full"><option value="">Tất cả</option><option>LK</option><option>HG</option><option>BL</option><option>BV</option><option>XL</option></select>
+          <select id="ward" class="flat px-3 py-2 w-full">
+            <option value="">Tất cả</option><option>LK</option><option>HG</option><option>BL</option><option>BV</option><option>XL</option>
+          </select>
         </div>
         <div><label class="text-sm text-slate-600">Kỳ</label>
           <select id="grain" class="flat px-3 py-2 w-full">
@@ -64,20 +72,45 @@
       </div>
     </section>
 
-    <section class="grid md:grid-cols-4 gap-3 mt-4">
-      <div class="flat p-3 kpi"><div class="label">Tổng HĐ</div><div id="kpiHD" class="val">–</div></div>
-      <div class="flat p-3 kpi"><div class="label">Tổng TL</div><div id="kpiTL" class="val">–</div></div>
-      <div class="flat p-3 kpi"><div class="label">HĐ/Ngày TB</div><div id="kpiHDavg" class="val">–</div></div>
-      <div class="flat p-3 kpi"><div class="label">TL/Ngày TB</div><div id="kpiTLavg" class="val">–</div></div>
+    <!-- KPIs -->
+    <section class="grid md:grid-cols-6 gap-3 mt-4">
+      <div class="flat p-4 kpi"><div class="label">Tổng Hợp đồng</div><div id="kpiHD" class="val">–</div></div>
+      <div class="flat p-4 kpi"><div class="label">Tổng Thanh lý</div><div id="kpiTL" class="val">–</div></div>
+      <div class="flat p-4 kpi"><div class="label">% HĐ đã TL</div><div id="kpiRate" class="val">–</div></div>
+      <div class="flat p-4 kpi"><div class="label">HĐ / ngày (TB)</div><div id="kpiHDavg" class="val">–</div></div>
+      <div class="flat p-4 kpi"><div class="label">TL / ngày (TB)</div><div id="kpiTLavg" class="val">–</div></div>
+      <div class="flat p-4 kpi">
+        <div class="label">Huỷ (HĐ / TL)</div>
+        <div class="val"><span id="kpiVoidHD">–</span> / <span id="kpiVoidTL">–</span></div>
+      </div>
     </section>
 
+    <!-- Charts row 1: Trend -->
+    <section class="grid gap-3 mt-4">
+      <div class="flat p-4">
+        <div class="flex items-center justify-between mb-2">
+          <h3 class="font-semibold">Xu hướng theo kỳ</h3>
+          <div class="text-sm text-slate-500" id="trendSubtitle">—</div>
+        </div>
+        <div class="chart-box"><canvas id="chartTrend"></canvas></div>
+      </div>
+    </section>
+
+    <!-- Charts row 2: Distribution by ward -->
     <section class="grid md:grid-cols-2 gap-3 mt-4">
-      <div class="flat p-4"><h3 class="font-semibold mb-2">Hợp đồng</h3><canvas id="chartHD" height="160"></canvas></div>
-      <div class="flat p-4"><h3 class="font-semibold mb-2">Thanh lý</h3><canvas id="chartTL" height="160"></canvas></div>
+      <div class="flat p-4">
+        <h3 class="font-semibold mb-2">Phân bố Hợp đồng theo phường</h3>
+        <div class="chart-box"><canvas id="chartWardHD"></canvas></div>
+      </div>
+      <div class="flat p-4">
+        <h3 class="font-semibold mb-2">Phân bố Thanh lý theo phường</h3>
+        <div class="chart-box"><canvas id="chartWardTL"></canvas></div>
+      </div>
     </section>
 
+    <!-- Table -->
     <section class="flat p-4 mt-4">
-      <h3 class="font-semibold mb-2">Bảng dữ liệu (tổng hợp theo kỳ)</h3>
+      <h3 class="font-semibold mb-2">Bảng tổng hợp theo kỳ</h3>
       <div class="overflow-x-auto">
         <table class="min-w-full">
           <thead class="text-left text-slate-500"><tr><th class="p-2">Kỳ</th><th class="p-2">HĐ</th><th class="p-2">TL</th></tr></thead>
@@ -87,12 +120,15 @@
     </section>
   </main>
 
+  <!-- Toast -->
+  <div id="toast" class="fixed bottom-4 right-4 hidden text-white px-4 py-3 rounded-lg" style="background:#0f172a"></div>
+
   <!-- Login Modal -->
   <dialog id="loginDialog" class="rounded-xl p-0 w-[92vw] max-w-md">
     <form id="loginForm" method="dialog" class="p-5">
       <h3 class="text-lg font-semibold mb-3">Đăng nhập</h3>
       <div class="space-y-3">
-        <div><label class="text-sm text-slate-600">Email</label><input id="emailModal" class="flat px-3 py-2 w-full" placeholder="vd: admin1@vp.local" autocomplete="username" /></div>
+        <div><label class="text-sm text-slate-600">Email</label><input id="emailModal" class="flat px-3 py-2 w-full" placeholder="vd: admin@vp.local" autocomplete="username" /></div>
         <div><label class="text-sm text-slate-600">Mật khẩu</label><input id="passwordModal" type="password" class="flat px-3 py-2 w-full" placeholder="mật khẩu" autocomplete="current-password" /></div>
       </div>
       <div class="mt-4 flex justify-end gap-2">
@@ -104,29 +140,27 @@
 
   <script type="module">
     import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+    /* === Supabase config === */
     const SUPABASE_URL="https://nefjhmhzfuuwxxhhjaei.supabase.co";
-    const SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5lZmpobWh6ZnV1d3h4aGhqYWVpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTYxMTI3MzQsImV4cCI6MjA3MTY4ODczNH0.2vT6kw0uvSTr49cGLSrsZbT6qtPJ_mYzXsu7PGJpGrY"; /* ← dán ANON KEY */
+    const SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5lZmpobWh6ZnV1d3h4aGhqYWVpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTYxMTI3MzQsImV4cCI6MjA3MTY4ODczNH0.2vT6kw0uvSTr49cGLSrsZbT6qtPJ_mYzXsu7PGJpGrY";  // ← DÁN ANON KEY
     const sb=createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+
     const gi=id=>document.getElementById(id);
-    let charts={hd:null,tl:null};
+    const toast=(m)=>{ const t=gi('toast'); t.textContent=m; t.classList.remove('hidden'); setTimeout(()=>t.classList.add('hidden'),2000); };
 
     const getSession = async()=> (await sb.auth.getSession()).data.session;
+    async function fetchRole(){ const {data,error}=await sb.rpc('get_my_role'); if(error){console.error(error);return '';} return data||''; }
 
-    // NEW: lấy role từ bảng app_role
-    async function fetchRole(){
-      const { data, error } = await sb.rpc('get_my_role');
-      if (error){ console.error(error); return ''; }
-      return data || '';
-    }
-
+    /* === Guard quyền xem báo cáo === */
     async function guardReports(){
-      const s = await getSession();
-      if (!s) return; // chưa đăng nhập → có thể đăng nhập tại chỗ
-      const email = (s.user.email || '').toLowerCase();
-      const role  = await fetchRole();
-      const allowed = (role==='admin'||role==='report_admin'|| email==='admin@vp.local'||email==='admin1@vp.local');
-      if (!allowed){
-        document.body.innerHTML = `
+      const s=await getSession();
+      if (!s) return; // sẽ đăng nhập phía dưới
+      const email=(s.user.email||'').toLowerCase();
+      const role=await fetchRole();
+      const allowed=(role==='admin'||role==='report_admin'|| email==='admin@vp.local'||email==='admin1@vp.local');
+      if(!allowed){
+        document.body.innerHTML=`
           <div style="max-width:720px;margin:40px auto;font-family:system-ui">
             <h1 style="font-size:20px;font-weight:700">Truy cập bị hạn chế</h1>
             <p>Chức năng báo cáo chỉ dành cho tài khoản <b>admin</b> hoặc <b>report_admin</b>.</p>
@@ -136,40 +170,47 @@
     }
     guardReports();
 
-    // Modal login
+    /* === Login handling (desktop + modal) === */
     const dlg=gi('loginDialog'), emailModal=gi('emailModal'), passwordModal=gi('passwordModal');
     const openLoginDialog=()=>{ if(!dlg.open) dlg.showModal(); setTimeout(()=>emailModal.focus(),30); };
     const closeLoginDialog=()=>{ if(dlg.open) dlg.close(); };
-    gi('btnCloseLogin').onclick = closeLoginDialog;
-    document.getElementById('loginForm').addEventListener('submit', async (e)=>{
+    gi('btnCloseLogin').onclick=closeLoginDialog;
+    gi('loginForm').addEventListener('submit', async (e)=>{
       e.preventDefault();
       const { error } = await sb.auth.signInWithPassword({ email: emailModal.value.trim(), password: passwordModal.value });
       if (error){ alert(error.message); return; }
-      closeLoginDialog(); await runReport();
+      closeLoginDialog(); toast("Đăng nhập thành công");
+      await runReport();
     });
-
-    document.getElementById('btnLogin').onclick = async ()=>{
-      const desktop = window.matchMedia('(min-width: 640px)').matches;
-      if (desktop){
-        const email = gi('email').value.trim(), password = gi('password').value;
+    gi('btnLogin').onclick=async ()=>{
+      const desktop=window.matchMedia('(min-width:640px)').matches;
+      if(desktop){
+        const email=gi('email').value.trim(), password=gi('password').value;
         if(!email||!password){ alert("Chưa nhập email/mật khẩu"); return; }
         const { error } = await sb.auth.signInWithPassword({ email, password });
-        if (error){ alert(error.message); return; }
+        if(error){ alert(error.message); return; }
         await runReport();
       } else openLoginDialog();
     };
-    document.getElementById('btnLogout').onclick = async ()=>{ await sb.auth.signOut(); };
+    gi('btnLogout').onclick=async()=>{ await sb.auth.signOut(); toast("Đã đăng xuất"); };
 
+    /* === Helpers === */
     function fmtKey(d, grain){
       const dt=new Date(d);
       if (grain==='year')  return String(dt.getFullYear());
       if (grain==='month') return dt.getFullYear()+"-"+String(dt.getMonth()+1).padStart(2,'0');
-      if (grain==='week'){ const t=new Date(dt); const day=(t.getDay()+6)%7; t.setDate(t.getDate()-day);
+      if (grain==='week'){
+        const t=new Date(dt); const day=(t.getDay()+6)%7; t.setDate(t.getDate()-day);
         const onejan=new Date(t.getFullYear(),0,1);
         const week=Math.ceil((((t-onejan)/86400000)+onejan.getDay()+1)/7);
-        return t.getFullYear()+"-W"+String(week).padStart(2,'0'); }
+        return t.getFullYear()+"-W"+String(week).padStart(2,'0');
+      }
       return dt.toISOString().slice(0,10);
     }
+    function sum(arr){ return arr.reduce((a,b)=>a+b,0); }
+
+    /* === Report state & charts === */
+    let charts={trend:null, wardHD:null, wardTL:null};
 
     async function requireLogin(){ const s=await getSession(); if(!s){ openLoginDialog(); return false; } return true; }
 
@@ -177,48 +218,119 @@
       if(!await requireLogin()) return;
 
       const from=gi('from').value || new Date(new Date().getFullYear(),0,1).toISOString().slice(0,10);
-      const to=gi('to').value || new Date().toISOString().slice(0,10);
-      const ward=gi('ward').value; const grain=gi('grain').value;
+      const to  =gi('to').value   || new Date().toISOString().slice(0,10);
+      const ward=gi('ward').value;
+      const grain=gi('grain').value;
 
-      let q1=sb.from('contract').select('issued_date,ward').gte('issued_date',from).lte('issued_date',to);
-      let q2=sb.from('termination').select('terminated_date,ward').gte('terminated_date',from).lte('terminated_date',to);
-      if (ward){ q1=q1.eq('ward',ward); q2=q2.eq('ward',ward); }
-      const [{data:dHD,error:e1},{data:dTL,error:e2}] = await Promise.all([q1,q2]);
+      // Query song song
+      let qHD=sb.from('contract').select('issued_date,ward,status').gte('issued_date',from).lte('issued_date',to);
+      let qTL=sb.from('termination').select('terminated_date,ward,status').gte('terminated_date',from).lte('terminated_date',to);
+      if (ward){ qHD=qHD.eq('ward',ward); qTL=qTL.eq('ward',ward); }
+
+      const [{data:hd, error:e1},{data:tl, error:e2}] = await Promise.all([qHD,qTL]);
       if (e1||e2){ alert((e1||e2).message); return; }
 
+      /* KPIs */
+      const totalHD = hd.length;
+      const totalTL = tl.length;
+      const voidHD  = hd.filter(r=>String(r.status).toLowerCase()==='void').length;
+      const voidTL  = tl.filter(r=>String(r.status).toLowerCase()==='void').length;
+      const days = Math.max(1,(new Date(to)-new Date(from))/86400000);
+
+      gi('kpiHD').textContent = totalHD;
+      gi('kpiTL').textContent = totalTL;
+      gi('kpiRate').textContent = totalHD ? ((totalTL/totalHD)*100).toFixed(1)+'%' : '–';
+      gi('kpiHDavg').textContent = (totalHD/days).toFixed(2);
+      gi('kpiTLavg').textContent = (totalTL/days).toFixed(2);
+      gi('kpiVoidHD').textContent = voidHD;
+      gi('kpiVoidTL').textContent = voidTL;
+
+      /* Xu hướng theo kỳ */
       const agg=new Map();
-      for(const r of dHD){ const k=fmtKey(r.issued_date,grain); agg.set(k,{key:k,hd:(agg.get(k)?.hd||0)+1,tl:agg.get(k)?.tl||0}); }
-      for(const r of dTL){ const k=fmtKey(r.terminated_date,grain); agg.set(k,{key:k,hd:agg.get(k)?.hd||0,tl:(agg.get(k)?.tl||0)+1}); }
+      for(const r of hd){ const k=fmtKey(r.issued_date,grain); agg.set(k,{key:k,hd:(agg.get(k)?.hd||0)+1,tl:agg.get(k)?.tl||0}); }
+      for(const r of tl){ const k=fmtKey(r.terminated_date,grain); agg.set(k,{key:k,hd:agg.get(k)?.hd||0,tl:(agg.get(k)?.tl||0)+1}); }
       const rows=Array.from(agg.values()).sort((a,b)=>a.key.localeCompare(b.key));
+      const labels=rows.map(r=>r.key), dataHD=rows.map(r=>r.hd), dataTL=rows.map(r=>r.tl);
 
-      const totalHD=dHD.length, totalTL=dTL.length;
-      gi('kpiHD').textContent=totalHD; gi('kpiTL').textContent=totalTL;
-      const days=Math.max(1,(new Date(to)-new Date(from))/86400000);
-      gi('kpiHDavg').textContent=(totalHD/days).toFixed(2);
-      gi('kpiTLavg').textContent=(totalTL/days).toFixed(2);
+      gi('trendSubtitle').textContent = `${from} → ${to} · ${ward||'Tất cả phường'} · kỳ: ${grain}`;
 
+      charts.trend?.destroy();
+      charts.trend = new Chart(gi('chartTrend'),{
+        type:'line',
+        data:{
+          labels,
+          datasets:[
+            { label:'Hợp đồng',   data:dataHD, tension:.3, fill:false },
+            { label:'Thanh lý',   data:dataTL, tension:.3, fill:false }
+          ]
+        },
+        options:{
+          responsive:true, maintainAspectRatio:false,
+          interaction:{ mode:'index', intersect:false },
+          plugins:{ legend:{ position:'top' } },
+          scales:{ x:{ ticks:{ maxRotation:0, autoSkip:true } }, y:{ beginAtZero:true, precision:0 } }
+        }
+      });
+
+      /* Phân bố theo phường */
+      const wards=['LK','HG','BL','BV','XL'];
+      const wardCountHD = new Map(wards.map(w=>[w,0]));
+      const wardCountTL = new Map(wards.map(w=>[w,0]));
+      hd.forEach(r=> wardCountHD.set(r.ward, (wardCountHD.get(r.ward)||0)+1));
+      tl.forEach(r=> wardCountTL.set(r.ward, (wardCountTL.get(r.ward)||0)+1));
+      const wLabels = wards;
+      const wHD = wLabels.map(w=> wardCountHD.get(w)||0);
+      const wTL = wLabels.map(w=> wardCountTL.get(w)||0);
+
+      charts.wardHD?.destroy();
+      charts.wardTL?.destroy();
+      charts.wardHD = new Chart(gi('chartWardHD'),{
+        type:'doughnut',
+        data:{ labels:wLabels, datasets:[{ data:wHD }] },
+        options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ position:'right' } } }
+      });
+      charts.wardTL = new Chart(gi('chartWardTL'),{
+        type:'doughnut',
+        data:{ labels:wLabels, datasets:[{ data:wTL }] },
+        options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ position:'right' } } }
+      });
+
+      /* Bảng */
       const tbody=gi('reportBody'); tbody.innerHTML='';
-      rows.forEach(r=>{ const tr=document.createElement('tr'); tr.innerHTML=`<td class="p-2">${r.key}</td><td class="p-2">${r.hd}</td><td class="p-2">${r.tl}</td>`; tbody.appendChild(tr); });
+      rows.forEach(r=>{
+        const tr=document.createElement('tr');
+        tr.innerHTML=`<td class="p-2">${r.key}</td><td class="p-2">${r.hd}</td><td class="p-2">${r.tl}</td>`;
+        tbody.appendChild(tr);
+      });
 
-      const labels=rows.map(r=>r.key), hd=rows.map(r=>r.hd), tl=rows.map(r=>r.tl);
-      charts.hd?.destroy(); charts.tl?.destroy();
-      charts.hd=new Chart(document.getElementById('chartHD'),{ type:'bar', data:{labels, datasets:[{label:'Hợp đồng', data:hd}]}, options:{maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{maxRotation:60,autoSkip:true}}}} });
-      charts.tl=new Chart(document.getElementById('chartTL'),{ type:'bar', data:{labels, datasets:[{label:'Thanh lý', data:tl}]}, options:{maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{maxRotation:60,autoSkip:true}}}} });
-
+      /* Lưu để export */
       window.__reportRows=rows; window.__reportMeta={from,to,ward,grain,generatedAt:new Date().toISOString()};
     }
 
+    /* Export Excel */
     function exportExcel(){
       const rows=window.__reportRows||[], meta=window.__reportMeta||{};
-      const sheet=[["Báo cáo QL Số HĐ & TL"],["Kỳ:",meta.grain],["Từ ngày:",meta.from,"Đến ngày:",meta.to,"Phường:",meta.ward||"Tất cả"],[],["Kỳ","Hợp đồng","Thanh lý"],...rows.map(r=>[r.key,r.hd,r.tl])];
-      const wb=XLSX.utils.book_new(); const ws=XLSX.utils.aoa_to_sheet(sheet);
-      XLSX.utils.book_append_sheet(wb,ws,"BaoCao"); XLSX.writeFile(wb,"BaoCao_HD_TL.xlsx");
+      const sheet=[
+        ["Báo cáo QL Số HĐ & TL"],
+        ["Khoảng", `${meta.from} → ${meta.to}`],
+        ["Phường", meta.ward||"Tất cả", "Kỳ", meta.grain, "Sinh lúc", meta.generatedAt],
+        [],
+        ["Kỳ","Hợp đồng","Thanh lý"],
+        ...rows.map(r=>[r.key,r.hd,r.tl])
+      ];
+      const wb=XLSX.utils.book_new();
+      const ws=XLSX.utils.aoa_to_sheet(sheet);
+      XLSX.utils.book_append_sheet(wb,ws,"BaoCao");
+      XLSX.writeFile(wb,"BaoCao_HD_TL.xlsx");
     }
 
-    document.getElementById('btnRun').onclick=runReport;
-    document.getElementById('btnExport').onclick=exportExcel;
+    /* Wire buttons */
+    gi('btnRun').onclick=runReport;
+    gi('btnExport').onclick=exportExcel;
 
-    const today=new Date(); const y0=new Date(today.getFullYear(),0,1).toISOString().slice(0,10);
+    /* Defaults */
+    const today=new Date();
+    const y0=new Date(today.getFullYear(),0,1).toISOString().slice(0,10);
     gi('from').value=y0; gi('to').value=today.toISOString().slice(0,10);
   </script>
 </body>
