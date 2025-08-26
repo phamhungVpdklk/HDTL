@@ -7,12 +7,10 @@
   <title>QL Số HĐ & TL – VPĐKLK</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    :root{
-      --bg:#f6f7fb; --text:#0f172a; --muted:#475569; --line:#e2e8f0;
-      --primary:#2563eb; --warn:#d97706; --danger:#dc2626; --card:#fff; --tap:44px;
-    }
+    :root{ --bg:#f6f7fb; --text:#0f172a; --muted:#475569; --line:#e2e8f0;
+      --primary:#2563eb; --warn:#d97706; --card:#fff; --tap:44px }
     html,body{ background:var(--bg); color:var(--text) }
-    input,select,button{ min-height: var(--tap) }
+    input,select,button{ min-height:var(--tap) }
     .flat{ border:1px solid var(--line); border-radius:12px; background:var(--card) }
     .btn{ border:1px solid var(--line); border-radius:10px; padding:.55rem 1rem; font-weight:600; background:#fff }
     .btn-primary{ background:var(--primary); color:#fff; border-color:var(--primary) }
@@ -23,25 +21,21 @@
     .badge-hd{ background:#e0eaff; color:#1d4ed8 }
     .badge-tl{ background:#fff2e0; color:#a45403 }
     .badge-void{ background:#ffe0e0; color:#b91c1c; text-decoration:line-through; text-decoration-thickness:2px; border-color:#fecaca }
-    .table{width:100%}
-    .table th,.table td{ padding:.6rem; border-bottom:1px solid var(--line); vertical-align:top }
+    .table{width:100%} .table th,.table td{ padding:.6rem; border-bottom:1px solid var(--line); vertical-align:top }
     .pill{ display:inline-flex; align-items:center; gap:.4rem; padding:.3rem .7rem; border:1px solid var(--line); border-radius:999px; font-size:.9rem; background:#f1f5f9; color:var(--muted) }
     .card-row{ border:1px solid var(--line); border-radius:12px; background:#fff; padding:.9rem }
     .card-row h4{ font-weight:700; margin:0 0 .35rem }
     .card-row .meta{ font-size:.92rem; color:var(--muted); display:flex; flex-wrap:wrap; gap:.45rem .8rem }
     .card-row .actions{ margin-top:.6rem; display:flex; flex-wrap:wrap; gap:.4rem }
-    @media (max-width: 640px){
+    @media (max-width:640px){
       html{ font-size:15px }
-      .sticky-actions{ position:sticky; bottom:0; left:0; right:0; background:#ffffffee; backdrop-filter: blur(6px); border-top:1px solid var(--line); padding:.6rem; display:flex; gap:.5rem; z-index:30 }
-    }
-    @media (prefers-reduced-motion: reduce){
-      *{ animation-duration:0.01ms !important; animation-iteration-count:1 !important; transition-duration:0.01ms !important; scroll-behavior:auto !important;}
+      .sticky-actions{ position:sticky; bottom:0; left:0; right:0; background:#ffffffee; backdrop-filter:blur(6px);
+        border-top:1px solid var(--line); padding:.6rem; display:flex; gap:.5rem; z-index:30 }
     }
   </style>
 </head>
 <body>
-  <!-- Topbar -->
-  <header class="border-b" style="border-color:var(--line); background:#fff;">
+  <header class="border-b" style="border-color:var(--line);background:#fff;">
     <div class="max-w-6xl mx-auto px-3 py-3 flex items-center gap-3">
       <div class="flex-1 flex items-center gap-4">
         <span class="text-lg md:text-xl font-bold">QL Số HĐ & TL – VPĐKLK</span>
@@ -50,14 +44,12 @@
           <a id="reportsLink" class="pill hover:underline" href="./reports.html" style="display:none">Báo cáo</a>
         </nav>
       </div>
-      <!-- Desktop inputs -->
       <div class="hidden sm:flex items-center gap-2">
         <input id="email" class="flat px-3 py-2 w-64" placeholder="email (vd: user1@vp.local)" autocomplete="username" />
         <input id="password" type="password" class="flat px-3 py-2 w-48" placeholder="mật khẩu" autocomplete="current-password" />
         <button id="btnLogin" class="btn btn-primary">Đăng nhập</button>
         <button id="btnLogout" class="btn btn-ghost">Đăng xuất</button>
       </div>
-      <!-- Mobile buttons -->
       <div class="sm:hidden flex gap-2">
         <button id="btnLogin" class="btn btn-primary">Đăng nhập</button>
         <button id="btnLogout" class="btn btn-ghost">Đăng xuất</button>
@@ -66,14 +58,12 @@
   </header>
 
   <main class="max-w-6xl mx-auto px-3 py-6">
-    <!-- Info -->
     <section class="grid md:grid-cols-3 gap-3">
       <div class="flat p-3"><div class="text-[13px] text-slate-500">Người dùng</div><div id="who" class="text-lg font-semibold">Chưa đăng nhập</div></div>
       <div class="flat p-3"><div class="text-[13px] text-slate-500">Vai trò</div><div id="role" class="text-lg font-semibold">–</div></div>
       <div class="flat p-3"><div class="text-[13px] text-slate-500">Phiên</div><div id="session" class="text-lg font-semibold">–</div></div>
     </section>
 
-    <!-- Issue Contract -->
     <section class="flat p-4 mt-6">
       <h2 class="text-xl font-bold">Cấp số Hợp đồng</h2>
       <div class="grid sm:grid-cols-6 grid-cols-2 gap-3 mt-3">
@@ -85,9 +75,9 @@
           <label class="text-sm text-slate-600">Tên chủ đất</label>
           <input id="owner" class="flat px-3 py-2 w-full" placeholder="Nguyễn Văn A" autocomplete="name" />
         </div>
-        <div><label class="text-sm text-slate-600">Số tờ</label><input id="sheet" type="number" inputmode="numeric" pattern="[0-9]*" class="flat px-3 py-2 w-full" /></div>
-        <div><label class="text-sm text-slate-600">Số thửa</label><input id="parcel" type="number" inputmode="numeric" pattern="[0-9]*" class="flat px-3 py-2 w-full" /></div>
-        <div class="sm:col-span-2 col-span-2"><label class="text-sm text-slate-600">Ghi chú</label><input id="note" class="flat px-3 py-2 w-full" autocomplete="off" /></div>
+        <div><label class="text-sm text-slate-600">Số tờ</label><input id="sheet" type="number" class="flat px-3 py-2 w-full" /></div>
+        <div><label class="text-sm text-slate-600">Số thửa</label><input id="parcel" type="number" class="flat px-3 py-2 w-full" /></div>
+        <div class="sm:col-span-2 col-span-2"><label class="text-sm text-slate-600">Ghi chú</label><input id="note" class="flat px-3 py-2 w-full" /></div>
       </div>
       <div class="mt-3 flex gap-2 items-center">
         <button id="btnIssueHD" class="btn btn-primary">Cấp số HĐ</button>
@@ -95,7 +85,6 @@
       </div>
     </section>
 
-    <!-- Contracts -->
     <section class="flat p-4 mt-6">
       <div class="flex items-center justify-between gap-3">
         <h2 class="text-xl font-bold">Danh sách Hợp đồng gần đây</h2>
@@ -106,14 +95,12 @@
           <button id="btnReload" class="btn">Tải lại</button>
         </div>
       </div>
-      <!-- desktop table -->
       <div class="mt-3 overflow-x-auto hidden sm:block">
         <table class="table">
           <thead class="text-left text-slate-500"><tr><th>Số HĐ</th><th>Phường</th><th>Chủ đất</th><th>Tờ</th><th>Thửa</th><th>Trạng thái</th><th>Hành động</th></tr></thead>
           <tbody id="contractsBody"></tbody>
         </table>
       </div>
-      <!-- mobile cards -->
       <div id="contractsCards" class="mt-3 grid gap-3 sm:hidden"></div>
 
       <p class="text-sm text-slate-500 mt-3">
@@ -122,14 +109,12 @@
       </p>
     </section>
 
-    <!-- Sticky action bar (mobile) -->
     <div class="sticky-actions sm:hidden">
       <button id="btnIssueHD_mobile" class="btn btn-primary flex-1">Cấp số HĐ</button>
       <button id="btnReload_mobile" class="btn">Tải lại</button>
     </div>
   </main>
 
-  <!-- Toast -->
   <div id="toast" class="fixed bottom-4 right-4 hidden text-white px-4 py-3 rounded-lg" style="background:#0f172a"></div>
 
   <!-- Login Modal -->
@@ -150,15 +135,21 @@
   <script type="module">
     import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
     const SUPABASE_URL = "https://nefjhmhzfuuwxxhhjaei.supabase.co";
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5lZmpobWh6ZnV1d3h4aGhqYWVpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTYxMTI3MzQsImV4cCI6MjA3MTY4ODczNH0.2vT6kw0uvSTr49cGLSrsZbT6qtPJ_mYzXsu7PGJpGrY";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5lZmpobWh6ZnV1d3h4aGhqYWVpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTYxMTI3MzQsImV4cCI6MjA3MTY4ODczNH0.2vT6kw0uvSTr49cGLSrsZbT6qtPJ_mYzXsu7PGJpGrY";  /* ← dán ANON KEY */
     const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     const gi = (id)=>document.getElementById(id);
     const toast = (msg)=>{const t=gi('toast');t.textContent=msg;t.classList.remove('hidden');setTimeout(()=>t.classList.add('hidden'),2200);};
     const getSession = async()=> (await sb.auth.getSession()).data.session;
-    const getRoleFrom = (s)=> s?.user?.app_metadata?.role || "";
-    const emailFrom = (s)=> s?.user?.email || "";
     const isVoid = (st)=> (st||'').toLowerCase()==='void';
+
+    // NEW: lấy role từ RPC get_my_role()
+    async function fetchRole(){
+      const { data, error } = await sb.rpc('get_my_role');
+      if (error){ console.error(error); return ''; }
+      return data || '';
+    }
+
     function vnContractStatus(r, tlMap){ return isVoid(r.status) ? 'Đã huỷ' : (tlMap.has(r.id) ? 'Hoàn thành' : 'Chưa thanh lý'); }
 
     async function refreshWho(){
@@ -166,51 +157,51 @@
       const reportsLink = document.getElementById('reportsLink');
       if (!session){
         gi('who').textContent="Chưa đăng nhập"; gi('role').textContent="–"; gi('session').textContent="–";
-        if (reportsLink) reportsLink.style.display = 'none';
-        return;
+        if (reportsLink) reportsLink.style.display='none'; return;
       }
-      const role = getRoleFrom(session);
-      const email = (emailFrom(session)||'').toLowerCase();
-      const showReports = (role==='admin'||role==='report_admin'|| email==='admin@vp.local'||email==='admin1@vp.local');
-      gi('who').textContent = emailFrom(session);
-      gi('role').textContent = role || "(chưa gán)";
+      const email = (session.user.email || '').toLowerCase();
+      const role  = await fetchRole();
+
+      gi('who').textContent = session.user.email || '';
+      gi('role').textContent = role || '(chưa gán)';
       gi('session').textContent = session.access_token.slice(0,12)+"…";
+
+      const showReports = (role==='admin'||role==='report_admin'|| email==='admin@vp.local'||email==='admin1@vp.local');
       if (reportsLink) reportsLink.style.display = showReports ? '' : 'none';
     }
 
-    // Login (desktop direct / mobile modal)
+    // Modal login
     const dlg=gi('loginDialog'), emailModal=gi('emailModal'), passwordModal=gi('passwordModal');
-    const openLoginDialog = ()=>{ if(!dlg.open) dlg.showModal(); setTimeout(()=>emailModal.focus(), 30); };
-    const closeLoginDialog = ()=>{ if(dlg.open) dlg.close(); };
+    const openLoginDialog=()=>{ if(!dlg.open) dlg.showModal(); setTimeout(()=>emailModal.focus(),30); };
+    const closeLoginDialog=()=>{ if(dlg.open) dlg.close(); };
     gi('btnCloseLogin').onclick = closeLoginDialog;
     gi('loginForm').addEventListener('submit', async (e)=>{
       e.preventDefault();
-      try{
-        const { error } = await sb.auth.signInWithPassword({ email: emailModal.value.trim(), password: passwordModal.value });
-        if (error) throw error;
-        closeLoginDialog(); toast("Đăng nhập thành công"); await refreshWho(); await loadContracts();
-      }catch(err){ console.error(err); alert(err.message||err); }
+      const { error } = await sb.auth.signInWithPassword({ email: emailModal.value.trim(), password: passwordModal.value });
+      if (error){ alert(error.message); return; }
+      closeLoginDialog(); toast("Đăng nhập thành công"); await refreshWho(); await loadContracts();
     });
 
+    // Header login
     document.querySelectorAll('#btnLogin').forEach(btn=>{
       btn.addEventListener('click', async ()=>{
         const desktop = window.matchMedia('(min-width: 640px)').matches;
         if (desktop){
           const email = gi('email').value.trim(), password = gi('password').value;
-          if (!email || !password){ alert("Nhập email/mật khẩu"); return; }
+          if(!email||!password){ alert("Nhập email/mật khẩu"); return; }
           const { error } = await sb.auth.signInWithPassword({ email, password });
           if (error){ alert(error.message); return; }
           toast("Đăng nhập thành công"); await refreshWho(); await loadContracts();
-        }else openLoginDialog();
+        } else openLoginDialog();
       });
     });
     document.querySelectorAll('#btnLogout').forEach(btn=> btn.addEventListener('click', async()=>{ await sb.auth.signOut(); await refreshWho(); }));
 
     // Issue HĐ
     const issueHd = async()=>{
+      const s=await getSession(); if(!s){ openLoginDialog(); return; }
       try{
-        const s=await getSession(); if(!s) { openLoginDialog(); return; }
-        const payload={ p_ward:gi('ward').value, p_owner_name:gi('owner').value, p_sheet_no:+gi('sheet').value, p_parcel_no:+gi('parcel').value, p_request_id:crypto.randomUUID(), p_note:gi('note').value||null };
+        const payload={ p_ward:gi('ward').value, p_owner_name:gi('owner').value, p_sheet_no:+gi('sheet').value||null, p_parcel_no:+gi('parcel').value||null, p_request_id:crypto.randomUUID(), p_note:gi('note').value||null };
         const { data, error } = await sb.rpc('issue_contract', payload);
         if (error) throw error;
         gi('hdResult').innerHTML = `<span class="badge badge-hd">${data.contract_no}</span>`;
@@ -223,7 +214,8 @@
     // Load list
     async function loadContracts(){
       const s=await getSession(); if(!s) return;
-      const role=getRoleFrom(s); const ward=gi('filterWard').value;
+      const role = await fetchRole();
+      const ward=gi('filterWard').value;
       let q=sb.from('contract').select('id,contract_no,ward,owner_name,sheet_no,parcel_no,status').order('id',{ascending:false}).limit(100);
       if (ward) q=q.eq('ward', ward);
       const { data:contracts, error } = await q;
@@ -232,12 +224,12 @@
       // TL issued map
       const ids=contracts.map(r=>r.id); const tlMap=new Map();
       if (ids.length){
-        const { data: tls, error:e2 } = await sb.from('termination').select('contract_id, termination_no, status').in('contract_id', ids).eq('status','issued');
+        const { data: tls, error:e2 } = await sb.from('termination').select('contract_id,termination_no,status').in('contract_id', ids).eq('status','issued');
         if (e2){ alert(e2.message); return; }
         for (const t of tls) tlMap.set(t.contract_id, t.termination_no);
       }
 
-      // TABLE
+      // Desktop table
       const tbody=gi('contractsBody'); tbody.innerHTML='';
       for (const r of contracts){
         const tlNo=tlMap.get(r.id);
@@ -265,7 +257,7 @@
         tbody.appendChild(tr);
       }
 
-      // CARDS
+      // Mobile cards
       const cards=gi('contractsCards'); cards.innerHTML='';
       for (const r of contracts){
         const tlNo=tlMap.get(r.id);
@@ -293,60 +285,53 @@
         cards.appendChild(card);
       }
 
+      // Attach actions
       const attach=(root)=> root.querySelectorAll('button[data-act]').forEach(btn=>{
         btn.addEventListener('click', async (ev)=>{
           const el=ev.currentTarget, act=el.getAttribute('data-act');
-          if (act==='issue-tl'){
-            const contractNo=el.getAttribute('data-no'), w=el.getAttribute('data-ward');
-            el.disabled=true; el.textContent='Đang cấp...';
-            try{
+          try{
+            if (act==='issue-tl'){
+              const contractNo=el.getAttribute('data-no'), w=el.getAttribute('data-ward');
+              el.disabled=true; el.textContent='Đang cấp...';
               const { data, error } = await sb.rpc('issue_termination',{ p_ward:w, p_contract_no:contractNo, p_request_id:crypto.randomUUID(), p_note:null });
               if (error) throw error;
               toast("Đã cấp TL: "+data.termination_no); await loadContracts();
-            }catch(e){ console.error(e); alert("Lỗi TL: "+(e.message||e)); el.disabled=false; el.textContent='Cấp TL'; }
-          }
-          if (act==='void-tl'){
-            const tlNo=el.getAttribute('data-no');
-            const reason=prompt("Nhập lý do huỷ (≥ 20 ký tự). Ví dụ: nhập sai tên chủ / nhầm thửa ...");
-            if (!reason || reason.trim().length<20){ alert("Lý do quá ngắn (≥20 ký tự)."); return; }
-            el.disabled=true; el.textContent='Đang huỷ...';
-            try{
+            }
+            if (act==='void-tl'){
+              const tlNo=el.getAttribute('data-no');
+              const reason=prompt("Nhập lý do huỷ (≥ 20 ký tự). Ví dụ: nhập sai tên chủ / nhầm thửa ...");
+              if (!reason || reason.trim().length<20){ alert("Lý do quá ngắn (≥20 ký tự)."); return; }
+              el.disabled=true; el.textContent='Đang huỷ...';
               const { error } = await sb.rpc('void_record',{ p_entity:'TERMINATION', p_number:tlNo, p_reason_code:'USER_VOID', p_reason_text:reason });
               if (error) throw error;
               toast("Đã huỷ TL: "+tlNo); await loadContracts();
-            }catch(e){ console.error(e); alert("Lỗi huỷ TL: "+(e.message||e)); el.disabled=false; el.textContent='Huỷ TL'; }
-          }
-          if (act==='void-hd'){
-            const hdNo=el.getAttribute('data-no');
-            const reason=prompt("Nhập lý do huỷ HĐ (≥ 20 ký tự). Lưu ý: HĐ có TL hiệu lực sẽ không thể huỷ.");
-            if (!reason || reason.trim().length<20){ alert("Lý do quá ngắn (≥20 ký tự)."); return; }
-            el.disabled=true; el.textContent='Đang huỷ...';
-            try{
+            }
+            if (act==='void-hd'){
+              const hdNo=el.getAttribute('data-no');
+              const reason=prompt("Nhập lý do huỷ HĐ (≥ 20 ký tự). Lưu ý: HĐ có TL hiệu lực sẽ không thể huỷ.");
+              if (!reason || reason.trim().length<20){ alert("Lý do quá ngắn (≥20 ký tự)."); return; }
+              el.disabled=true; el.textContent='Đang huỷ...';
               const { error } = await sb.rpc('void_record',{ p_entity:'CONTRACT', p_number:hdNo, p_reason_code:'USER_VOID', p_reason_text:reason });
               if (error) throw error;
               toast("Đã huỷ HĐ: "+hdNo); await loadContracts();
-            }catch(e){ console.error(e); alert("Lỗi huỷ HĐ: "+(e.message||e)); el.disabled=false; el.textContent='Huỷ HĐ'; }
-          }
-          if (act==='del-tl'){
-            const tlNo=el.getAttribute('data-no');
-            if (!confirm("Xoá cứng TL "+tlNo+"? (chỉ dọn dữ liệu test)")) return;
-            el.disabled=true; el.textContent='Đang xoá...';
-            try{
+            }
+            if (act==='del-tl'){
+              const tlNo=el.getAttribute('data-no');
+              if (!confirm("Xoá cứng TL "+tlNo+"? (chỉ dọn dữ liệu test)")) return;
+              el.disabled=true; el.textContent='Đang xoá...';
               const { error } = await sb.rpc('admin_delete_termination',{ p_termination_no:tlNo });
               if (error) throw error;
               toast("Đã xoá TL: "+tlNo); await loadContracts();
-            }catch(e){ console.error(e); alert("Lỗi xoá TL: "+(e.message||e)); el.disabled=false; el.textContent='Xoá TL'; }
-          }
-          if (act==='del-hd'){
-            const hdNo=el.getAttribute('data-no');
-            if (!confirm("Xoá cứng HĐ "+hdNo+"? (chỉ dọn dữ liệu test)")) return;
-            el.disabled=true; el.textContent='Đang xoá...';
-            try{
+            }
+            if (act==='del-hd'){
+              const hdNo=el.getAttribute('data-no');
+              if (!confirm("Xoá cứng HĐ "+hdNo+"? (chỉ dọn dữ liệu test)")) return;
+              el.disabled=true; el.textContent='Đang xoá...';
               const { error } = await sb.rpc('admin_delete_contract',{ p_contract_no:hdNo });
               if (error) throw error;
               toast("Đã xoá HĐ: "+hdNo); await loadContracts();
-            }catch(e){ console.error(e); alert("Lỗi xoá HĐ: "+(e.message||e)); el.disabled=false; el.textContent='Xoá HĐ'; }
-          }
+            }
+          }catch(e){ console.error(e); alert(e.message||e); el.disabled=false; }
         });
       });
       attach(tbody); attach(cards);
