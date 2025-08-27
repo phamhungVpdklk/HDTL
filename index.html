@@ -22,10 +22,10 @@
     .badge-tl{ background:#fff2e0; color:#a45403 }
     .badge-void{ background:#ffe0e0; color:#b91c1c; text-decoration:line-through; text-decoration-thickness:2px; border-color:#fecaca }
     .table{width:100%} .table th,.table td{ padding:.6rem; border-bottom:1px solid var(--line); vertical-align:top }
-    .pill{ display:inline-flex; align-items:center; gap:.4rem; padding:.3rem .7rem; border:1px solid var(--line); border-radius:999px; font-size:.9rem; background:#f1f5f9; color:var(--muted) }
+    .pill{ display:inline-flex; align-items:center; gap:.4rem; padding:.3rem .7rem; border:1px solid var(--line); border-radius:999px; font-size:.9rem; background:#f1f5f9; color:#334155 }
     .card-row{ border:1px solid var(--line); border-radius:12px; background:#fff; padding:.9rem }
     .card-row h4{ font-weight:700; margin:0 0 .35rem }
-    .card-row .meta{ font-size:.92rem; color:var(--muted); display:flex; flex-wrap:wrap; gap:.45rem .8rem }
+    .card-row .meta{ font-size:.92rem; color:#475569; display:flex; flex-wrap:wrap; gap:.45rem .8rem }
     .card-row .actions{ margin-top:.6rem; display:flex; flex-wrap:wrap; gap:.4rem }
     @media (max-width:640px){
       html{ font-size:15px }
@@ -65,7 +65,7 @@
     </section>
 
     <section class="flat p-4 mt-6">
-      <h2 class="text-xl font-bold">Cấp số Hợp đồng</h2>
+      <h2 class="text-xl font-bold">Cấp số Hợp đồng (đánh số toàn cục)</h2>
       <div class="grid sm:grid-cols-6 grid-cols-2 gap-3 mt-3">
         <div class="sm:col-span-1 col-span-2">
           <label class="text-sm text-slate-600">Phường</label>
@@ -143,7 +143,7 @@
     const getSession = async()=> (await sb.auth.getSession()).data.session;
     const isVoid = (st)=> (st||'').toLowerCase()==='void';
 
-    // NEW: lấy role từ RPC get_my_role()
+    // Lấy role từ bảng app_role (RPC get_my_role)
     async function fetchRole(){
       const { data, error } = await sb.rpc('get_my_role');
       if (error){ console.error(error); return ''; }
@@ -161,11 +161,9 @@
       }
       const email = (session.user.email || '').toLowerCase();
       const role  = await fetchRole();
-
       gi('who').textContent = session.user.email || '';
       gi('role').textContent = role || '(chưa gán)';
       gi('session').textContent = session.access_token.slice(0,12)+"…";
-
       const showReports = (role==='admin'||role==='report_admin'|| email==='admin@vp.local'||email==='admin1@vp.local');
       if (reportsLink) reportsLink.style.display = showReports ? '' : 'none';
     }
@@ -197,12 +195,12 @@
     });
     document.querySelectorAll('#btnLogout').forEach(btn=> btn.addEventListener('click', async()=>{ await sb.auth.signOut(); await refreshWho(); }));
 
-    // Issue HĐ
+    // Cấp số HĐ (GỌI RPC GLOBAL)
     const issueHd = async()=>{
       const s=await getSession(); if(!s){ openLoginDialog(); return; }
       try{
         const payload={ p_ward:gi('ward').value, p_owner_name:gi('owner').value, p_sheet_no:+gi('sheet').value||null, p_parcel_no:+gi('parcel').value||null, p_request_id:crypto.randomUUID(), p_note:gi('note').value||null };
-        const { data, error } = await sb.rpc('issue_contract', payload);
+        const { data, error } = await sb.rpc('issue_contract_global', payload);
         if (error) throw error;
         gi('hdResult').innerHTML = `<span class="badge badge-hd">${data.contract_no}</span>`;
         toast("Đã cấp: " + data.contract_no); await loadContracts();
@@ -211,7 +209,7 @@
     gi('btnIssueHD').onclick = issueHd;
     gi('btnIssueHD_mobile').onclick = ()=> gi('btnIssueHD').click();
 
-    // Load list
+    // Load list & gắn hành động
     async function loadContracts(){
       const s=await getSession(); if(!s) return;
       const role = await fetchRole();
@@ -293,7 +291,8 @@
             if (act==='issue-tl'){
               const contractNo=el.getAttribute('data-no'), w=el.getAttribute('data-ward');
               el.disabled=true; el.textContent='Đang cấp...';
-              const { data, error } = await sb.rpc('issue_termination',{ p_ward:w, p_contract_no:contractNo, p_request_id:crypto.randomUUID(), p_note:null });
+              // GỌI RPC GLOBAL
+              const { data, error } = await sb.rpc('issue_termination_global',{ p_ward:w, p_contract_no:contractNo, p_request_id:crypto.randomUUID(), p_note:null });
               if (error) throw error;
               toast("Đã cấp TL: "+data.termination_no); await loadContracts();
             }
