@@ -7,8 +7,7 @@
   <title>QL Số HĐ & TL – VPĐKLK</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    :root{ --bg:#f6f7fb; --text:#0f172a; --muted:#475569; --line:#e2e8f0;
-      --primary:#2563eb; --warn:#d97706; --card:#fff; --tap:44px }
+    :root{ --bg:#f6f7fb; --text:#0f172a; --muted:#475569; --line:#e2e8f0; --primary:#2563eb; --warn:#d97706; --card:#fff; --tap:44px }
     html,body{ background:var(--bg); color:var(--text) }
     input,select,button{ min-height:var(--tap) }
     .flat{ border:1px solid var(--line); border-radius:12px; background:var(--card) }
@@ -143,7 +142,7 @@
     const getSession = async()=> (await sb.auth.getSession()).data.session;
     const isVoid = (st)=> (st||'').toLowerCase()==='void';
 
-    // Lấy role từ bảng app_role (RPC get_my_role)
+    // Lấy role từ app_role (RPC get_my_role)
     async function fetchRole(){
       const { data, error } = await sb.rpc('get_my_role');
       if (error){ console.error(error); return ''; }
@@ -195,7 +194,7 @@
     });
     document.querySelectorAll('#btnLogout').forEach(btn=> btn.addEventListener('click', async()=>{ await sb.auth.signOut(); await refreshWho(); }));
 
-    // Cấp số HĐ (GỌI RPC GLOBAL)
+    // Cấp số HĐ (RPC GLOBAL)
     const issueHd = async()=>{
       const s=await getSession(); if(!s){ openLoginDialog(); return; }
       try{
@@ -291,7 +290,6 @@
             if (act==='issue-tl'){
               const contractNo=el.getAttribute('data-no'), w=el.getAttribute('data-ward');
               el.disabled=true; el.textContent='Đang cấp...';
-              // GỌI RPC GLOBAL
               const { data, error } = await sb.rpc('issue_termination_global',{ p_ward:w, p_contract_no:contractNo, p_request_id:crypto.randomUUID(), p_note:null });
               if (error) throw error;
               toast("Đã cấp TL: "+data.termination_no); await loadContracts();
