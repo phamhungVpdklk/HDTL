@@ -1,311 +1,449 @@
 <!doctype html>
 <html lang="vi">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="color-scheme" content="light dark" />
-  <title>BÁO CÁO – QL HĐ & TL VPĐK LONG KHÁNH</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-
-  <!-- THEME -->
-  <style id="vpdk-theme">
-    :root{
-      --vpdk-bg:#f7f8fb; --vpdk-card:#ffffff; --vpdk-line:#e5e7eb;
-      --vpdk-text:#0f172a; --vpdk-muted:#475569;
-      --vpdk-primary:#2563eb; --vpdk-warn:#d97706; --vpdk-danger:#dc2626;
-      --vpdk-neutral:#64748b; --vpdk-focus:#93c5fd;
-    }
-    @media (prefers-color-scheme: dark){
-      :root{
-        --vpdk-bg:#0b1020; --vpdk-card:#0f172a; --vpdk-line:#1f2937;
-        --vpdk-text:#e5e7eb; --vpdk-muted:#94a3b8;
-      }
-    }
-    html,body{ background:var(--vpdk-bg); color:var(--vpdk-text) }
-    .flat{ background:var(--vpdk-card); border:1px solid var(--vpdk-line); border-radius:14px }
-    input,select,button{ min-height:44px }
-    input.flat,select.flat{ padding:.6rem .8rem }
-    .btn{ appearance:none; user-select:none; border-radius:12px; border:1px solid var(--vpdk-line);
-          padding:.6rem 1rem; font-weight:700; transition:.15s; display:inline-flex; gap:.5rem; align-items:center }
-    .btn:hover{ transform:translateY(-1px) }
-    .btn:active{ transform:translateY(0) }
-    .btn:focus-visible{ outline:3px solid var(--vpdk-focus); outline-offset:2px }
-    .btn-primary{ background:var(--vpdk-primary); color:#fff; border-color:var(--vpdk-primary) }
-    .btn-neutral{ background:#f1f5f9; color:#0f172a; border-color:var(--vpdk-line) }
-    .kpi .label{ color:var(--vpdk-muted); font-size:12px }
-    .kpi .val{ font-size:1.6rem; font-weight:800 }
-    .chip{ display:inline-flex; align-items:center; gap:.4rem; padding:.3rem .6rem; border:1px solid var(--vpdk-line); border-radius:999px; background:#f1f5f9; color:#334155; font-size:.9rem }
-    .chart-box{ height:320px }
-    @media (max-width: 640px){ html{ font-size:15px } .chart-box{ height:260px } }
-
-    /* Header vàng 3D nền xanh */
-    .header-title {
-      font-size: 1.3rem;
-      font-weight: 900;
-      color: #FFD700;
-      text-shadow: 2px 2px 4px rgba(0,0,0,0.4), 0 0 8px #fff59d;
-    }
-    .header-bar {
-      background: linear-gradient(90deg, #38bdf8, #0ea5e9);
-      padding: 1rem;
-      text-align: center;
-    }
-    .btn-nav{border-radius:8px; padding:.35rem .8rem; font-weight:700; border:1px solid #cbd5e1; background:#f1f5f9; color:#0f172a;}
-  </style>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Báo cáo | QL HĐ & TL – VPĐK Long Khánh</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<style>
+:root{--line:#e5e7eb}
+body{background:#f7f8fb;color:#0f172a}
+.flat{background:#fff;border:1px solid var(--line);border-radius:14px}
+.btn{border-radius:12px;padding:.55rem .9rem;font-weight:700;border:1px solid var(--line);background:#f8fafc}
+.btn-primary{background:#2563eb;color:#fff;border-color:#2563eb}
+.btn-nav{border-radius:8px;padding:.35rem .8rem;font-weight:700;border:1px solid #cbd5e1;background:#f1f5f9;color:#0f172a}
+.kpi{border:1px solid var(--line);border-radius:14px;padding:.8rem 1rem;background:#fff}
+.badge{display:inline-block;padding:.25rem .55rem;border-radius:999px;border:1px solid var(--line);font-weight:800}
+.badge-hd{background:#e0eaff;color:#1d4ed8;border-color:#bfdbfe}
+.badge-tl{background:#fff1e6;color:#a45303;border-color:#fed7aa}
+.badge-void{background:#ffe0e0;color:#b91c1c;border-color:#fecaca;text-decoration:line-through;text-decoration-thickness:2px}
+.toast{position:fixed;bottom:1rem;left:1rem;background:#ef4444;color:#fff;padding:.6rem .9rem;border-radius:10px;box-shadow:0 6px 18px rgba(0,0,0,.25)}
+.hidden{display:none}
+.header-bar{background:linear-gradient(90deg,#38bdf8,#0ea5e9);padding:1rem;text-align:center}
+.header-title{font-weight:900;color:#FFD700;text-shadow:2px 2px 4px rgba(0,0,0,.4),0 0 8px #fff59d}
+@media print{
+ @page{size:A4 portrait;margin:10mm}
+ .noprint,.header-bar{display:none!important}
+ #kpiRow{display:grid!important;grid-template-columns:repeat(3,1fr);gap:4mm;margin-top:0}
+ .kpi{padding:4mm 5mm}.kpi .text-2xl{font-size:18px}.kpi .text-sm{font-size:11px}
+ .charts-page{display:grid!important;grid-template-columns:1fr 1fr;grid-template-areas:"trend status" "ward status";gap:6mm;page-break-after:always}
+ #boxTrend{grid-area:trend}#boxWard{grid-area:ward}#boxStatus{grid-area:status}
+ canvas{max-width:100%!important;height:58mm!important}
+ #detailPage{break-before:page}#tblDetail tr{break-inside:avoid}
+}
+</style>
 </head>
 <body>
-  <!-- HEADER mới -->
-  <header class="header-bar">
-    <div class="flex flex-col items-center gap-2">
-      <div class="flex items-center justify-center gap-2">
-        <span class="text-2xl">📊</span>
-        <span class="header-title">BÁO CÁO HỢP ĐỒNG & THANH LÝ VPĐK LONG KHÁNH</span>
-      </div>
-      <nav class="flex gap-3">
-        <a href="index.html" class="btn-nav">Trang chính</a>
-        <a href="reports.html" class="btn-nav">Trang báo cáo</a>
-      </nav>
+<header class="header-bar noprint">
+  <div class="flex flex-col items-center gap-2">
+    <div class="flex items-center justify-center gap-2">
+      <span class="text-2xl">📊</span>
+      <span class="header-title text-[1.25rem] sm:text-[1.35rem]">PHẦN MỀM QUẢN LÝ HỢP ĐỒNG & THANH LÝ VPĐK LONG KHÁNH – BÁO CÁO</span>
     </div>
-  </header>
+    <nav class="flex flex-wrap items-center gap-3 justify-center">
+      <a href="index.html" class="btn-nav">Trang chính</a>
+      <a href="reports.html" class="btn-nav">Trang báo cáo</a>
+      <span class="mx-1 text-white/70 hidden sm:inline">|</span>
+      <button id="btnLogout" class="btn-nav">Đăng xuất</button>
+    </nav>
+  </div>
+</header>
 
-  <main class="max-w-6xl mx-auto px-3 py-6">
-    <!-- Filters -->
-    <section class="flat p-4">
-      <div class="grid grid-cols-2 sm:grid-cols-6 gap-3">
-        <div><label class="text-sm text-slate-600">Từ ngày</label><input id="from" type="date" class="flat px-3 py-2 w-full"/></div>
-        <div><label class="text-sm text-slate-600">Đến ngày</label><input id="to" type="date" class="flat px-3 py-2 w-full"/></div>
-        <div><label class="text-sm text-slate-600">Phường</label>
-          <select id="ward" class="flat px-3 py-2 w-full">
-            <option value="">Tất cả</option><option>LK</option><option>HG</option><option>BL</option><option>BV</option><option>XL</option>
-          </select>
-        </div>
-        <div><label class="text-sm text-slate-600">Kỳ</label>
-          <select id="grain" class="flat px-3 py-2 w-full">
-            <option value="day">Theo ngày</option>
-            <option value="week">Theo tuần</option>
-            <option value="month" selected>Theo tháng</option>
-            <option value="year">Theo năm</option>
-          </select>
-        </div>
-        <div class="flex items-end gap-2">
-          <button id="btnRun" class="btn btn-primary">Chạy báo cáo</button>
-          <button id="btnExport" class="btn btn-neutral">Xuất Excel</button>
-        </div>
-      </div>
-    </section>
-
-    <!-- KPIs -->
-    <section class="grid md:grid-cols-6 gap-3 mt-4">
-      <div class="flat p-4 kpi"><div class="label">Tổng Hợp đồng</div><div id="kpiHD" class="val">–</div></div>
-      <div class="flat p-4 kpi"><div class="label">Tổng Thanh lý</div><div id="kpiTL" class="val">–</div></div>
-      <div class="flat p-4 kpi"><div class="label">% HĐ đã TL</div><div id="kpiRate" class="val">–</div></div>
-      <div class="flat p-4 kpi"><div class="label">HĐ / ngày (TB)</div><div id="kpiHDavg" class="val">–</div></div>
-      <div class="flat p-4 kpi"><div class="label">TL / ngày (TB)</div><div id="kpiTLavg" class="val">–</div></div>
-      <div class="flat p-4 kpi"><div class="label">Huỷ (HĐ / TL)</div><div class="val"><span id="kpiVoidHD">–</span> / <span id="kpiVoidTL">–</span></div></div>
-    </section>
-
-    <!-- Trend -->
-    <section class="grid gap-3 mt-4">
-      <div class="flat p-4">
-        <div class="flex items-center justify-between mb-2">
-          <h3 class="font-semibold">Xu hướng theo kỳ</h3>
-          <div class="text-sm text-slate-500" id="trendSubtitle">—</div>
-        </div>
-        <div class="chart-box"><canvas id="chartTrend"></canvas></div>
-      </div>
-    </section>
-
-    <!-- Distribution -->
-    <section class="grid md:grid-cols-2 gap-3 mt-4">
-      <div class="flat p-4">
-        <h3 class="font-semibold mb-2">Phân bố HĐ theo phường</h3>
-        <div class="chart-box"><canvas id="chartWardHD"></canvas></div>
-      </div>
-      <div class="flat p-4">
-        <h3 class="font-semibold mb-2">Phân bố TL theo phường</h3>
-        <div class="chart-box"><canvas id="chartWardTL"></canvas></div>
-      </div>
-    </section>
-
-    <!-- Table -->
-    <section class="flat p-4 mt-4">
-      <h3 class="font-semibold mb-2">Bảng tổng hợp theo kỳ</h3>
-      <div class="overflow-x-auto">
-        <table class="min-w-full">
-          <thead class="text-left text-slate-500"><tr><th class="p-2">Kỳ</th><th class="p-2">HĐ</th><th class="p-2">TL</th></tr></thead>
-          <tbody id="reportBody"></tbody>
-        </table>
-      </div>
-    </section>
-  </main>
-
-  <!-- FOOTER mới -->
-  <footer class="bg-slate-100 text-slate-700 text-sm mt-6 py-4 px-4">
-    <div class="max-w-6xl mx-auto space-y-2 text-center leading-relaxed">
-      <p><b>Miễn trừ trách nhiệm:</b> Phần mềm này chỉ phục vụ mục đích quản lý nội bộ VPĐKLK.
-         Chúng tôi không chịu trách nhiệm pháp lý cho việc sử dụng sai mục đích.</p>
-      <p>Mọi góp ý xin gửi về 📧 
-         <a href="mailto:phamhung16490@gmail.com" class="text-blue-600 underline">phamhung16490@gmail.com</a></p>
-      <p><b>Văn phòng Đăng ký Đất đai chi nhánh Long Khánh</b><br/>
-         Địa chỉ: Đường CMT8, Phường Long Khánh, tỉnh Đồng Nai</p>
-      <p class="text-xs">© 2025 VPĐKLK. All rights reserved.</p>
+<main class="max-w-7xl mx-auto px-3 py-6">
+  <!-- CONFIG OVERLAY (nếu thiếu URL/KEY) -->
+  <section id="configBox" class="flat p-5 hidden">
+    <h2 class="text-xl font-bold mb-2">Cấu hình Supabase</h2>
+    <p class="text-slate-600 mb-3">Nhập <b>Project URL</b> và <b>Anon public key</b> (Supabase → Project Settings → API). Thông tin sẽ lưu ở trình duyệt (localStorage).</p>
+    <div class="grid sm:grid-cols-3 gap-2">
+      <input id="cfgUrl" class="flat px-3 py-2" placeholder="https://xxxxx.supabase.co">
+      <input id="cfgKey" class="flat px-3 py-2" placeholder="Anon public key">
+      <button id="btnSaveCfg" class="btn btn-primary">Lưu cấu hình</button>
     </div>
-  </footer>
+  </section>
 
-  <div id="toast" class="fixed bottom-4 right-4 hidden text-white px-4 py-3 rounded-lg" style="background:#0f172a"></div>
+  <!-- GUARD + LOGIN -->
+  <section id="guard" class="flat p-5 hidden">
+    <h2 class="text-xl font-bold mb-2">Truy cập bị hạn chế</h2>
+    <p>Chức năng báo cáo chỉ dành cho tài khoản <b>admin</b> hoặc <b>report_admin</b>.</p>
+    <div id="guardMsg" class="text-sm text-slate-600 mt-2"></div>
 
-  <!-- Login Modal -->
-  <dialog id="loginDialog" class="rounded-xl p-0 w-[92vw] max-w-md">
-    <form id="loginForm" method="dialog" class="p-5">
-      <h3 class="text-lg font-semibold mb-3">Đăng nhập</h3>
-      <div class="space-y-3">
-        <div><label class="text-sm text-slate-600">Email</label><input id="emailModal" class="flat px-3 py-2 w-full" placeholder="vd: admin@vp.local" autocomplete="username" /></div>
-        <div><label class="text-sm text-slate-600">Mật khẩu</label><input id="passwordModal" type="password" class="flat px-3 py-2 w-full" placeholder="mật khẩu" autocomplete="current-password" /></div>
+    <!-- Login inline -->
+    <div id="loginBox" class="mt-4">
+      <div class="grid sm:grid-cols-3 gap-2">
+        <input id="lgEmail" class="flat px-3 py-2" placeholder="email (vd: admin1@vp.local)"/>
+        <input id="lgPass" type="password" class="flat px-3 py-2" placeholder="mật khẩu"/>
+        <button id="btnLogin" class="btn btn-primary">Đăng nhập</button>
       </div>
-      <div class="mt-4 flex justify-end gap-2">
-        <button type="button" id="btnCloseLogin" class="btn btn-ghost">Huỷ</button>
-        <button type="submit" id="btnDoLogin" class="btn btn-primary"><span class="ic">🔐</span>Đăng nhập</button>
+      <div class="flex items-center gap-2 mt-2">
+        <button id="btnPing" class="btn">Kiểm tra kết nối</button>
+        <span class="text-xs text-slate-500">Gợi ý: admin@vp.local / 064844126 • admin1@vp.local / admin1 • user1..7@vp.local / Ab1234567</span>
       </div>
-    </form>
-  </dialog>
+    </div>
 
-  <script type="module">
-    import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-    const SUPABASE_URL="https://nefjhmhzfuuwxxhhjaei.supabase.co";
-    const SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5lZmpobWh6ZnV1d3h4aGhqYWVpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTYxMTI3MzQsImV4cCI6MjA3MTY4ODczNH0.2vT6kw0uvSTr49cGLSrsZbT6qtPJ_mYzXsu7PGJpGrY";
-    const sb=createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
-    const gi=id=>document.getElementById(id);
-    const toast=(m)=>{ const t=gi('toast'); t.textContent=m; t.classList.remove('hidden'); setTimeout(()=>t.classList.add('hidden'),2000); };
+    <p class="mt-3"><a href="index.html" class="btn btn-primary">Quay lại Trang chính</a></p>
+  </section>
 
-    const getSession = async()=> (await sb.auth.getSession()).data.session;
-    async function fetchRole(){ const {data,error}=await sb.rpc('get_my_role'); if(error){console.error(error);return '';} return data||''; }
+  <!-- FILTERS -->
+  <section id="filtersBox" class="flat p-4 noprint hidden">
+    <div class="grid md:grid-cols-4 gap-3">
+      <div>
+        <div class="text-sm text-slate-600 mb-1">Khoảng thời gian</div>
+        <div class="flex gap-2">
+          <input id="from" type="date" class="flat px-2 py-2">
+          <input id="to"   type="date" class="flat px-2 py-2">
+        </div>
+        <div class="mt-2 flex flex-wrap gap-2">
+          <button class="btn" data-preset="today">Hôm nay</button>
+          <button class="btn" data-preset="7d">7 ngày</button>
+          <button class="btn" data-preset="month">Tháng này</button>
+          <button class="btn" data-preset="quarter">Quý này</button>
+          <button class="btn" data-preset="year">Năm nay</button>
+        </div>
+      </div>
+      <div>
+        <div class="text-sm text-slate-600 mb-1">Phường</div>
+        <select id="ward" class="flat px-2 py-2 w-full">
+          <option value="">Tất cả phường</option>
+          <option>LK</option><option>HG</option><option>BL</option><option>BV</option><option>XL</option>
+        </select>
+        <label class="inline-flex gap-2 items-center mt-3">
+          <input id="comparePrev" type="checkbox" class="accent-blue-600">
+          <span>So sánh với kỳ trước</span>
+        </label>
+      </div>
+      <div>
+        <div class="text-sm text-slate-600 mb-1">Kỳ</div>
+        <select id="grain" class="flat px-2 py-2 w-full">
+          <option value="day">Ngày</option>
+          <option value="week">Tuần</option>
+          <option value="month" selected>Tháng</option>
+          <option value="year">Năm</option>
+        </select>
+        <div class="mt-3 flex gap-2">
+          <button id="btnApply" class="btn btn-primary">Áp dụng</button>
+          <button id="btnPrint" class="btn">In / PDF</button>
+        </div>
+      </div>
+      <div>
+        <div class="text-sm text-slate-600 mb-1">Xuất dữ liệu</div>
+        <div class="flex gap-2">
+          <button id="btnExportXlsx" class="btn">Xuất Excel (tổng hợp)</button>
+          <button id="btnExportCsv"  class="btn">CSV (raw)</button>
+        </div>
+        <div id="who" class="mt-3 text-sm text-slate-600"></div>
+      </div>
+    </div>
+    <p class="text-xs text-slate-500 mt-3">
+      Định nghĩa: <b>Chưa thanh lý</b> = HĐ hợp lệ nhưng chưa có TL hiệu lực;
+      <b>Hoàn thành</b> = HĐ hợp lệ có TL hiệu lực; <b>Đã huỷ</b> = trạng thái <code>void</code>.
+    </p>
+  </section>
 
-    async function guardReports(){
-      const s=await getSession();
-      if (!s){ return; } // nếu chưa đăng nhập, cho hiện modal khi chạy báo cáo
-      const email=(s.user.email||'').toLowerCase();
-      const role=await fetchRole();
-      const allowed=(role==='admin'||role==='report_admin'|| email==='admin@vp.local'||email==='admin1@vp.local');
-      if(!allowed){
-        document.body.innerHTML=`
-          <div style="max-width:720px;margin:40px auto;font-family:system-ui">
-            <h1 style="font-size:20px;font-weight:700">Truy cập bị hạn chế</h1>
-            <p>Chức năng báo cáo chỉ dành cho tài khoản <b>admin</b> hoặc <b>report_admin</b>.</p>
-            <p><a href="./index.html" style="color:#2563eb;text-decoration:underline">Quay lại Trang chính</a></p>
-          </div>`;
-      }
+  <!-- KPI -->
+  <section id="kpiRow" class="grid sm:grid-cols-3 lg:grid-cols-6 gap-3 mt-6"></section>
+
+  <!-- CHARTS -->
+  <section id="chartsPage" class="charts-page grid lg:grid-cols-3 gap-4 mt-4">
+    <div id="boxTrend" class="flat p-3"><div class="flex items-center justify-between">
+      <h3 class="font-semibold">Xu hướng theo kỳ</h3><div id="legend1" class="text-xs text-slate-500"></div>
+    </div><canvas id="chartTrend" height="180"></canvas></div>
+    <div id="boxWard" class="flat p-3"><div class="flex items-center justify-between">
+      <h3 class="font-semibold">Phát sinh theo phường</h3><div id="legend2" class="text-xs text-slate-500"></div>
+    </div><canvas id="chartWard" height="180"></canvas></div>
+    <div id="boxStatus" class="flat p-3"><div class="flex items-center justify-between">
+      <h3 class="font-semibold">Phân bố trạng thái</h3><div id="legend3" class="text-xs text-slate-500"></div>
+    </div><canvas id="chartStatus" height="180"></canvas></div>
+  </section>
+
+  <!-- DETAIL -->
+  <section id="detailPage" class="flat p-4 mt-5">
+    <div class="flex items-center justify-between">
+      <h3 class="font-semibold">Chi tiết (tối đa 50 bản ghi gần nhất)</h3>
+      <button id="btnGoMain" class="btn noprint">Mở trên Trang chính</button>
+    </div>
+    <div class="overflow-x-auto mt-2">
+      <table class="min-w-full text-sm">
+        <thead class="text-left text-slate-500"><tr><th>Số HĐ</th><th>Phường</th><th>Chủ đất</th><th>Tờ</th><th>Thửa</th><th>TT</th></tr></thead>
+        <tbody id="tblDetail"></tbody>
+      </table>
+    </div>
+  </section>
+</main>
+
+<footer class="bg-slate-100 text-slate-700 text-sm mt-6 py-4 px-4">
+  <div class="max-w-7xl mx-auto space-y-2 text-center leading-relaxed">
+    <p><b>Miễn trừ trách nhiệm:</b> Phần mềm này chỉ phục vụ mục đích quản lý nội bộ VPĐKLK. Chúng tôi không chịu trách nhiệm pháp lý cho việc sử dụng sai mục đích.</p>
+    <p>Mọi góp ý xin gửi về 📧 <a href="mailto:phamhung16490@gmail.com" class="text-blue-600 underline">phamhung16490@gmail.com</a></p>
+    <p><b>Văn phòng Đăng ký Đất đai chi nhánh Long Khánh</b><br/>Địa chỉ: Đường CMT8, Phường Long Khánh, tỉnh Đồng Nai</p>
+    <p class="text-xs">© 2025 VPĐKLK. All rights reserved.</p>
+  </div>
+</footer>
+
+<div id="toast" class="toast hidden"></div>
+
+<script type="module">
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+const gi=id=>document.getElementById(id);
+const toast=m=>{const t=gi('toast');t.textContent=m;t.classList.remove('hidden');setTimeout(()=>t.classList.add('hidden'),4000);};
+
+// ===== 1) NẠP CẤU HÌNH SUPABASE =====
+// CÁCH 1: điền trực tiếp tại đây (nếu biết chắc URL/KEY):
+let SUPABASE_URL  = "https://nefjhmhzfuuwxxhhjaei.supabase.co"; // ví dụ: "https://nefjhmhzfuuwxxhhjaei.supabase.co"
+let SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5lZmpobWh6ZnV1d3h4aGhqYWVpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTYxMTI3MzQsImV4cCI6MjA3MTY4ODczNH0.2vT6kw0uvSTr49cGLSrsZbT6qtPJ_mYzXsu7PGJpGrY"; // dán Anon public key tại đây
+
+// CÁCH 2: nếu để trống, lấy từ localStorage:
+if(!SUPABASE_URL)  SUPABASE_URL  = localStorage.getItem('sb_url') || "";
+if(!SUPABASE_ANON_KEY) SUPABASE_ANON_KEY = localStorage.getItem('sb_key') || "";
+
+// Nếu vẫn thiếu, hiện hộp cấu hình:
+if(!SUPABASE_URL || !SUPABASE_ANON_KEY){
+  gi('configBox').classList.remove('hidden');
+  gi('cfgUrl').value = SUPABASE_URL || "https://nefjhmhzfuuwxxhhjaei.supabase.co";
+  gi('cfgKey').value = SUPABASE_ANON_KEY || "";
+}
+gi('btnSaveCfg')?.addEventListener('click', ()=>{
+  const u = gi('cfgUrl').value.trim();
+  const k = gi('cfgKey').value.trim();
+  if(!u || !k){ toast('Vui lòng nhập đủ URL & Anon key'); return; }
+  localStorage.setItem('sb_url', u);
+  localStorage.setItem('sb_key', k);
+  location.reload();
+});
+
+// Tạo client (chỉ khi đã có đủ thông tin)
+let sb = null;
+if(SUPABASE_URL && SUPABASE_ANON_KEY){
+  sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+}
+
+// ===== 2) TIỆN ÍCH CHUNG =====
+gi('btnLogout').onclick=async()=>{ if(!sb){location.href='index.html';return;} await sb.auth.signOut(); location.href='index.html'; };
+
+const startOf=(d,k)=>{const x=new Date(d); if(k==='week'){const day=(x.getDay()+6)%7;x.setDate(x.getDate()-day);} if(k==='month'){x.setDate(1);} if(k==='year'){x.setMonth(0,1);} x.setHours(0,0,0,0); return x;};
+const endOf=(d,k)=>{const x=new Date(startOf(d,k)); if(k==='week')x.setDate(x.getDate()+6); if(k==='month'){x.setMonth(x.getMonth()+1);x.setDate(0);} if(k==='year'){x.setFullYear(x.getFullYear()+1);x.setMonth(0);x.setDate(0);} x.setHours(23,59,59,999); return x;};
+const addDays=(d,n)=>{const x=new Date(d);x.setDate(x.getDate()+n);return x;};
+const addMonths=(d,n)=>{const x=new Date(d);x.setMonth(x.getMonth()+n);return x;};
+const toLocalOffset=()=>{const off=-new Date().getTimezoneOffset();const s=off>=0?'+':'-';const h=String(Math.floor(Math.abs(off)/60)).padStart(2,'0');const m=String(Math.abs(off)%60).padStart(2,'0');return `${s}${h}:${m}`;};
+const setPreset=(p)=>{const now=new Date();let f,t;
+  if(p==='today'){f=startOf(now,'day');t=endOf(now,'day');}
+  if(p==='7d'){t=endOf(now,'day');f=addDays(t,-6);f.setHours(0,0,0,0);}
+  if(p==='month'){f=startOf(now,'month');t=endOf(now,'month');}
+  if(p==='quarter'){const q=Math.floor(now.getMonth()/3)*3;const s=new Date(now.getFullYear(),q,1);f=s;t=endOf(addMonths(s,2),'month');}
+  if(p==='year'){f=startOf(now,'year');t=endOf(now,'year');}
+  gi('from').value=f.toISOString().slice(0,10); gi('to').value=t.toISOString().slice(0,10);
+};
+const bucketKey=(dateStr,grain)=>{const d=new Date(dateStr);
+  if(grain==='day')return d.toISOString().slice(0,10);
+  if(grain==='week'){const s=startOf(d,'week');return 'W'+s.toISOString().slice(0,10);}
+  if(grain==='month')return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
+  if(grain==='year')return String(d.getFullYear());
+};
+
+// ===== 3) ĐĂNG NHẬP & QUYỀN =====
+async function resolveRole(){
+  if(!sb) return {ok:false,reason:'Thiếu cấu hình URL/KEY',email:null,role:null};
+  const {data:sdata}=await sb.auth.getSession(); const sess=sdata.session;
+  if(!sess) return {ok:false,reason:'Chưa đăng nhập',email:null,role:null};
+  const email=sess.user.email, uid=sess.user.id;
+  try{ const {data:r1,error:e1}=await sb.rpc('get_my_role'); if(!e1&&r1) return {ok:true,email,role:r1}; }catch(_){}
+  try{ const {data:r2,error:e2}=await sb.from('app_role').select('role').eq('user_id',uid).maybeSingle();
+    if(!e2 && r2 && r2.role) return {ok:true,email,role:r2.role}; }catch(_){}
+  if(['admin@vp.local','admin1@vp.local'].includes(email))
+    return {ok:true,email,role:(email==='admin@vp.local'?'admin':'report_admin'),fallback:true};
+  return {ok:false,reason:'Không xác định được vai trò (RPC/app_role rỗng)',email,role:null};
+}
+function showGuard(msg){
+  gi('filtersBox').classList.add('hidden'); gi('kpiRow').classList.add('hidden');
+  document.querySelectorAll('section.flat').forEach(x=>x.classList.add('hidden'));
+  gi('guardMsg').textContent=msg||''; gi('guard').classList.remove('hidden');
+  gi('loginBox').classList.remove('hidden');
+}
+
+// Đăng nhập & Ping
+gi('btnLogin').onclick=async()=>{
+  if(!sb){toast('Thiếu cấu hình URL/KEY – vui lòng nhập ở trên.');return;}
+  const email=gi('lgEmail').value.trim(); const password=gi('lgPass').value;
+  try{
+    console.log('SB URL:', SUPABASE_URL, '| Key prefix:', SUPABASE_ANON_KEY.slice(0,8),'…');
+    const {error}=await sb.auth.signInWithPassword({email,password});
+    if(error) throw error; location.reload();
+  }catch(e){
+    console.error(e);
+    toast(e.message==='Failed to fetch'
+      ? 'Đăng nhập lỗi: Failed to fetch. Hãy chạy trang qua http(s) / kiểm tra URL & KEY.'
+      : 'Đăng nhập lỗi: '+e.message);
+  }
+};
+gi('btnPing').onclick=async()=>{
+  if(!SUPABASE_URL||!SUPABASE_ANON_KEY){toast('Thiếu URL/KEY.');return;}
+  try{
+    const res=await fetch(`${SUPABASE_URL}/auth/v1/health`,{headers:{apikey:SUPABASE_ANON_KEY}});
+    const text=await res.text(); alert(`Kết nối: ${res.status} ${res.statusText}\n${text}`);
+  }catch(e){ alert('Không kết nối được: '+e.message); }
+};
+
+// ===== 4) TẢI DỮ LIỆU & VẼ BIỂU ĐỒ =====
+function toISOWithLocal(dateStr,isEnd=false){
+  const tz=toLocalOffset();
+  if(!isEnd) return `${dateStr}T00:00:00${tz}`;
+  const d=new Date(`${dateStr}T00:00:00${tz}`); d.setDate(d.getDate()+1);
+  return d.toISOString().slice(0,19)+tz;
+}
+async function fetchRange(from,to,ward){
+  const fromISO=toISOWithLocal(from,false);
+  const toISO=toISOWithLocal(to,true);
+  let q1=sb.from('contract').select('id,issued_date,ward,status,contract_no,owner_name,sheet_no,parcel_no').gte('issued_date',fromISO).lt('issued_date',toISO);
+  let q2=sb.from('termination').select('id,contract_id,terminated_date,ward,status,termination_no').gte('terminated_date',fromISO).lt('terminated_date',toISO);
+  if(ward){q1=q1.eq('ward',ward);q2=q2.eq('ward',ward);}
+  const [{data:HD,error:e1},{data:TL,error:e2}]=await Promise.all([q1,q2]);
+  if(e1)throw new Error('Lỗi tải HĐ: '+e1.message);
+  if(e2)throw new Error('Lỗi tải TL: '+e2.message);
+  return {HD,TL};
+}
+function aggregate({HD,TL},grain){
+  const map=new Map();const put=(k,f)=>{let o=map.get(k);if(!o){o={hd:0,tl:0,void_hd:0,void_tl:0};map.set(k,o);}f(o);};
+  HD.forEach(r=>{const k=bucketKey(r.issued_date,grain);(r.status==='void')?put(k,o=>o.void_hd++):put(k,o=>o.hd++);});
+  TL.forEach(r=>{const k=bucketKey(r.terminated_date,grain);(r.status==='void')?put(k,o=>o.void_tl++):put(k,o=>o.tl++);});
+  const total_hd=HD.filter(r=>r.status!=='void').length;
+  const total_voidH=HD.filter(r=>r.status==='void').length;
+  const total_tl=TL.filter(r=>r.status==='issued').length;
+  const tlSet=new Set(TL.filter(t=>t.status==='issued').map(t=>t.contract_id));
+  const done=HD.filter(r=>r.status!=='void'&&tlSet.has(r.id)).length;
+  const open=total_hd-done;
+  const wardAgg={}; HD.forEach(r=>{const w=r.ward;wardAgg[w]??={hd:0,void_hd:0,done:0}; if(r.status==='void')wardAgg[w].void_hd++; else wardAgg[w].hd++; if(r.status!=='void'&&tlSet.has(r.id))wardAgg[w].done++;});
+  const wardRows=Object.entries(wardAgg).map(([w,v])=>({ward:w,...v}));
+  const labels=Array.from(map.keys()).sort(); const series=labels.map(k=>map.get(k));
+  return {labels,series,totals:{total_hd,total_tl,total_voidH,done,open},wardRows};
+}
+let chartTrend=null,chartWard=null,chartStatus=null;
+function ensureCharts(){
+  if(!chartTrend){chartTrend=new Chart(gi('chartTrend'),{type:'line',data:{labels:[],datasets:[
+    {label:'Hợp đồng',data:[],borderColor:'#3b82f6',backgroundColor:'#3b82f6',borderWidth:2,tension:.2,pointRadius:3},
+    {label:'Thanh lý',data:[],borderColor:'#f59e0b',backgroundColor:'#f59e0b',borderWidth:2,tension:.2,pointRadius:3}]},options:{scales:{y:{beginAtZero:true}}}});}
+  if(!chartWard){chartWard=new Chart(gi('chartWard'),{type:'bar',data:{labels:[],datasets:[
+    {label:'Hợp đồng',data:[],backgroundColor:'#3b82f6'},
+    {label:'Hoàn thành (có TL)',data:[],backgroundColor:'#10b981'}]},options:{scales:{y:{beginAtZero:true}}}});}
+  if(!chartStatus){chartStatus=new Chart(gi('chartStatus'),{type:'doughnut',data:{labels:['Chưa thanh lý','Hoàn thành','Đã huỷ (HĐ)'],datasets:[{data:[],backgroundColor:['#94a3b8','#10b981','#ef4444'],borderWidth:0,hoverOffset:6}]} ,options:{plugins:{legend:{position:'bottom'}}}});}
+}
+function renderKPI(curr,prev=null){
+  const box=gi('kpiRow'); box.innerHTML='';
+  const t=curr.totals, p=prev?.totals;
+  const items=[
+    {label:'Hợp đồng',val:t.total_hd,delta:p?Math.round((t.total_hd-p.total_hd)*100/Math.max(p.total_hd,1)):null},
+    {label:'Thanh lý',val:t.total_tl,delta:p?Math.round((t.total_tl-p.total_tl)*100/Math.max(p.total_tl,1)):null},
+    {label:'TL/HĐ (%)',val:t.total_hd?Math.round(t.total_tl*100/t.total_hd):0,delta:null},
+    {label:'Hoàn thành',val:t.done,delta:p?Math.round((t.done-p.done)*100/Math.max(p.done,1)):null},
+    {label:'Chưa thanh lý',val:t.open,delta:p?Math.round((t.open-p.open)*100/Math.max(p.open,1)):null},
+    {label:'Đã huỷ (HĐ)',val:t.total_voidH,delta:p?Math.round((t.total_voidH-p.total_voidH)*100/Math.max(p.total_voidH,1)):null},
+  ];
+  for(const it of items){
+    const d=it.delta;
+    const html=`<div class="kpi"><div class="text-sm text-slate-500">${it.label}</div>
+      <div class="text-2xl font-bold mt-1">${it.val.toLocaleString('vi-VN')}</div>
+      ${d==null?'':`<div class="text-sm mt-1 ${d>=0?'text-green-600':'text-rose-600'}">${d>=0?'▲':'▼'} ${Math.abs(d)}%</div>`}</div>`;
+    const wrap=document.createElement('div');wrap.innerHTML=html;box.appendChild(wrap.firstElementChild);
+  }
+}
+function renderCharts(curr){
+  ensureCharts();
+  const labels=curr.labels, hd=curr.series.map(x=>x.hd), tl=curr.series.map(x=>x.tl);
+  chartTrend.data.labels=labels; chartTrend.data.datasets[0].data=hd; chartTrend.data.datasets[1].data=tl; chartTrend.update();
+  const wards=curr.wardRows.map(x=>x.ward);
+  chartWard.data.labels=wards; chartWard.data.datasets[0].data=curr.wardRows.map(x=>x.hd); chartWard.data.datasets[1].data=curr.wardRows.map(x=>x.done); chartWard.update();
+  chartStatus.data.datasets[0].data=[curr.totals.open,curr.totals.done,curr.totals.total_voidH]; chartStatus.update();
+  gi('legend1').textContent=labels.length?`Kỳ: ${labels[0]} … ${labels[labels.length-1]}`:'';
+  gi('legend2').textContent=wards.length?`Phường: ${wards.join(', ')}`:'—';
+}
+function renderDetail(HD,TL){
+  const tbody=gi('tblDetail'); tbody.innerHTML='';
+  const tlSet=new Set(TL.filter(t=>t.status==='issued').map(t=>t.contract_id));
+  HD.sort((a,b)=>b.id-a.id);
+  HD.slice(0,50).forEach(r=>{
+    const status=r.status==='void'
+      ?'<span class="badge badge-void">Đã huỷ</span>'
+      :(tlSet.has(r.id)?'<span class="badge badge-tl">Hoàn thành</span>':'Chưa thanh lý');
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td><span class="badge ${r.status==='void'?'badge-void':'badge-hd'}">${r.contract_no}</span></td>
+      <td>${r.ward}</td><td>${r.owner_name??''}</td><td>${r.sheet_no??''}</td><td>${r.parcel_no??''}</td><td>${status}</td>`;
+    tbody.appendChild(tr);
+  });
+}
+function exportXlsx(curr){
+  const wb=XLSX.utils.book_new();
+  const sheet1=XLSX.utils.aoa_to_sheet([['Bucket','HĐ','TL','Void HĐ','Void TL'],...curr.labels.map((lb,i)=>[lb,curr.series[i].hd,curr.series[i].tl,curr.series[i].void_hd,curr.series[i].void_tl])]);
+  XLSX.utils.book_append_sheet(wb,sheet1,'Tổng hợp');
+  const sheet2=XLSX.utils.aoa_to_sheet([['Phường','HĐ','Hoàn thành','Đã huỷ'],...curr.wardRows.map(r=>[r.ward,r.hd,r.done,r.void_hd])]);
+  XLSX.utils.book_append_sheet(wb,sheet2,'Theo phường');
+  XLSX.writeFile(wb,'baocao_vpdklk.xlsx');
+}
+function exportCsv(HD,TL){
+  const esc=s=>`"${String(s??'').replace(/"/g,'""')}"`;
+  const toCSV=(rows,header)=>[header.join(','),...rows.map(r=>header.map(k=>esc(r[k])).join(','))].join('\n');
+  const csv1=toCSV(HD,['contract_no','issued_date','ward','owner_name','sheet_no','parcel_no','status']);
+  const csv2=toCSV(TL,['termination_no','terminated_date','ward','contract_id','status']);
+  const blob=new Blob([`[HOP_DONG]\n${csv1}\n\n[THANH_LY]\n${csv2}`],{type:'text/csv;charset=utf-8;'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='raw_hd_tl.csv'; a.click(); URL.revokeObjectURL(a.href);
+}
+function resizeChartsForPrint(){if(chartTrend&&chartWard&&chartStatus){['chartTrend','chartWard','chartStatus'].forEach(id=>{gi(id).style.height='58mm';});chartTrend.resize();chartWard.resize();chartStatus.resize();}}
+function restoreChartsAfterPrint(){if(chartTrend){['chartTrend','chartWard','chartStatus'].forEach(id=>{gi(id).style.height='';});chartTrend.resize();chartWard.resize();chartStatus.resize();}}
+
+window.addEventListener('beforeprint',resizeChartsForPrint);
+window.addEventListener('afterprint',restoreChartsAfterPrint);
+
+document.querySelectorAll('[data-preset]').forEach(b=>b.addEventListener('click',()=>setPreset(b.dataset.preset)));
+gi('btnExportXlsx').onclick=()=>exportXlsx(lastAgg||{labels:[],series:[],wardRows:[]});
+gi('btnExportCsv').onclick =()=>exportCsv(lastHD,lastTL);
+gi('btnPrint').onclick    =()=>{resizeChartsForPrint();window.print();};
+gi('btnGoMain').onclick   =()=>{const f=gi('from').value,t=gi('to').value,w=gi('ward').value;location.href='index.html?'+new URLSearchParams({from:f,to:t,ward:w}).toString();};
+
+let lastHD=[],lastTL=[],lastAgg=null;
+
+async function run(){
+  // nếu chưa cấu hình thì dừng
+  if(!sb){ gi('configBox').classList.remove('hidden'); showGuard('Thiếu cấu hình Supabase. Vui lòng nhập URL & Anon key.'); return; }
+
+  const {data:sdata}=await sb.auth.getSession(); const sess=sdata.session;
+  const email=sess?.user?.email||null;
+  let role=null, reason=''; 
+  try{
+    const r=await resolveRole(); role=r.role; reason=r.reason;
+    if(!r.ok || !['admin','report_admin'].includes(role||'')){
+      gi('who').textContent=email?`Đăng nhập: ${email}`:'';
+      showGuard(`Email: ${email||'n/a'} • Vai trò: ${role||'n/a'} • Lý do: ${reason||'n/a'}`);
+      return;
     }
-    guardReports();
+  }catch(e){
+    showGuard('Không xác định được vai trò: '+e.message);
+    return;
+  }
 
-    // Modal login
-    const dlg=gi('loginDialog'), emailModal=gi('emailModal'), passwordModal=gi('passwordModal');
-    const openLoginDialog=()=>{ if(!dlg.open) dlg.showModal(); setTimeout(()=>emailModal.focus(),30); };
-    const closeLoginDialog=()=>{ if(dlg.open) dlg.close(); };
-    gi('btnCloseLogin').onclick=closeLoginDialog;
-    gi('loginForm').addEventListener('submit', async (e)=>{
-      e.preventDefault();
-      const { error } = await sb.auth.signInWithPassword({ email: emailModal.value.trim(), password: passwordModal.value });
-      if (error){ alert(error.message); return; }
-      closeLoginDialog(); toast("Đăng nhập thành công");
-      await runReport();
-    });
+  gi('guard').classList.add('hidden'); gi('filtersBox').classList.remove('hidden');
 
-    function fmtKey(d, grain){
-      const dt=new Date(d);
-      if (grain==='year')  return String(dt.getFullYear());
-      if (grain==='month') return dt.getFullYear()+"-"+String(dt.getMonth()+1).padStart(2,'0');
-      if (grain==='week'){
-        const t=new Date(dt); const day=(t.getDay()+6)%7; t.setDate(t.getDate()-day);
-        const onejan=new Date(t.getFullYear(),0,1);
-        const week=Math.ceil((((t-onejan)/86400000)+onejan.getDay()+1)/7);
-        return t.getFullYear()+"-W"+String(week).padStart(2,'0');
-      }
-      return dt.toISOString().slice(0,10);
+  const from=gi('from').value,to=gi('to').value,ward=gi('ward').value,grain=gi('grain').value,compare=gi('comparePrev').checked;
+  try{
+    const {HD,TL}=await fetchRange(from,to,ward); lastHD=HD; lastTL=TL;
+    const curr=aggregate({HD,TL},grain); lastAgg=curr;
+    let prev=null;
+    if(compare){
+      const fromD=new Date(from),toD=new Date(to);const days=Math.round((toD-fromD)/86400000)+1;
+      const prevTo=addDays(fromD,-1),prevFrom=addDays(prevTo,-(days-1));
+      const {HD:HDp,TL:TLp}=await fetchRange(prevFrom.toISOString().slice(0,10),prevTo.toISOString().slice(0,10),ward);
+      prev=aggregate({HD:HDp,TL:TLp},grain);
     }
+    renderKPI(curr,prev); renderCharts(curr); renderDetail(HD,TL);
+    if(!HD.length && !TL.length) toast('Không có dữ liệu trong khoảng đã chọn');
+    gi('who').textContent = `Đăng nhập: ${email} (${role})`;
+  }catch(e){console.error(e);toast(e.message||'Đã xảy ra lỗi tải dữ liệu');}
+}
 
-    let charts={trend:null,wardHD:null,wardTL:null};
-    async function requireLogin(){ const s=await getSession(); if(!s){ openLoginDialog(); return false; } return true; }
-
-    async function runReport(){
-      if(!await requireLogin()) return;
-
-      const from=gi('from').value || new Date(new Date().getFullYear(),0,1).toISOString().slice(0,10);
-      const to  =gi('to').value || new Date().toISOString().slice(0,10);
-      const ward=gi('ward').value;
-      const grain=gi('grain').value;
-
-      let qHD=sb.from('contract').select('issued_date,ward,status').gte('issued_date',from).lte('issued_date',to);
-      let qTL=sb.from('termination').select('terminated_date,ward,status').gte('terminated_date',from).lte('terminated_date',to);
-      if (ward){ qHD=qHD.eq('ward',ward); qTL=qTL.eq('ward',ward); }
-
-      const [{data:hd, error:e1},{data:tl, error:e2}] = await Promise.all([qHD,qTL]);
-      if (e1||e2){ alert((e1||e2).message); return; }
-
-      // KPIs
-      const totalHD=hd.length, totalTL=tl.length;
-      const voidHD=hd.filter(r=>String(r.status).toLowerCase()==='void').length;
-      const voidTL=tl.filter(r=>String(r.status).toLowerCase()==='void').length;
-      const days=Math.max(1,(new Date(to)-new Date(from))/86400000);
-      gi('kpiHD').textContent=totalHD; gi('kpiTL').textContent=totalTL;
-      gi('kpiRate').textContent= totalHD ? ((totalTL/totalHD)*100).toFixed(1)+'%' : '–';
-      gi('kpiHDavg').textContent=(totalHD/days).toFixed(2);
-      gi('kpiTLavg').textContent=(totalTL/days).toFixed(2);
-      gi('kpiVoidHD').textContent=voidHD; gi('kpiVoidTL').textContent=voidTL;
-
-      // Xu hướng
-      const agg=new Map();
-      for(const r of hd){ const k=fmtKey(r.issued_date,grain); agg.set(k,{key:k,hd:(agg.get(k)?.hd||0)+1,tl:agg.get(k)?.tl||0}); }
-      for(const r of tl){ const k=fmtKey(r.terminated_date,grain); agg.set(k,{key:k,hd:agg.get(k)?.hd||0,tl:(agg.get(k)?.tl||0)+1}); }
-      const rows=Array.from(agg.values()).sort((a,b)=>a.key.localeCompare(b.key));
-      const labels=rows.map(r=>r.key), dataHD=rows.map(r=>r.hd), dataTL=rows.map(r=>r.tl);
-      gi('trendSubtitle').textContent = `${from} → ${to} · ${ward||'Tất cả phường'} · kỳ: ${grain}`;
-
-      charts.trend?.destroy();
-      charts.trend=new Chart(gi('chartTrend'),{
-        type:'line',
-        data:{ labels, datasets:[
-          { label:'Hợp đồng', data:dataHD, tension:.3, fill:false },
-          { label:'Thanh lý', data:dataTL, tension:.3, fill:false }
-        ]},
-        options:{ responsive:true, maintainAspectRatio:false, interaction:{mode:'index',intersect:false},
-          plugins:{ legend:{ position:'top' } }, scales:{ y:{ beginAtZero:true, precision:0 } } }
-      });
-
-      // Phân bố theo phường
-      const wards=['LK','HG','BL','BV','XL'];
-      const cntHD=new Map(wards.map(w=>[w,0])), cntTL=new Map(wards.map(w=>[w,0]));
-      hd.forEach(r=> cntHD.set(r.ward,(cntHD.get(r.ward)||0)+1));
-      tl.forEach(r=> cntTL.set(r.ward,(cntTL.get(r.ward)||0)+1));
-      const wLabels=wards, wHD=wLabels.map(w=>cntHD.get(w)||0), wTL=wLabels.map(w=>cntTL.get(w)||0);
-
-      charts.wardHD?.destroy(); charts.wardTL?.destroy();
-      charts.wardHD=new Chart(gi('chartWardHD'),{ type:'doughnut', data:{ labels:wLabels, datasets:[{ data:wHD }] },
-        options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ position:'right' } } }});
-      charts.wardTL=new Chart(gi('chartWardTL'),{ type:'doughnut', data:{ labels:wLabels, datasets:[{ data:wTL }] },
-        options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ position:'right' } } }});
-
-      // Bảng
-      const tbody=gi('reportBody'); tbody.innerHTML='';
-      rows.forEach(r=>{ const tr=document.createElement('tr'); tr.innerHTML=`<td class="p-2">${r.key}</td><td class="p-2">${r.hd}</td><td class="p-2">${r.tl}</td>`; tbody.appendChild(tr); });
-
-      // Lưu để export
-      window.__reportRows=rows; window.__reportMeta={from,to,ward,grain,generatedAt:new Date().toISOString()};
-    }
-
-    function exportExcel(){
-      const rows=window.__reportRows||[], meta=window.__reportMeta||{};
-      const sheet=[["Báo cáo QL Số HĐ & TL"],["Khoảng", `${meta.from} → ${meta.to}`],["Phường", meta.ward||"Tất cả", "Kỳ", meta.grain, "Sinh lúc", meta.generatedAt],[],["Kỳ","Hợp đồng","Thanh lý"],...rows.map(r=>[r.key,r.hd,r.tl])];
-      const wb=XLSX.utils.book_new(); const ws=XLSX.utils.aoa_to_sheet(sheet);
-      XLSX.utils.book_append_sheet(wb,ws,"BaoCao"); XLSX.writeFile(wb,"BaoCao_HD_TL.xlsx");
-    }
-
-    document.getElementById('btnRun').onclick=runReport;
-    document.getElementById('btnExport').onclick=exportExcel;
-
-    const today=new Date(); const y0=new Date(today.getFullYear(),0,1).toISOString().slice(0,10);
-    document.getElementById('from').value=y0; document.getElementById('to').value(today.toISOString().slice(0,10));
-  </script>
+function init(){
+  setPreset('month');
+  gi('btnApply').onclick=run;
+  run();
+}
+init();
+</script>
 </body>
 </html>
