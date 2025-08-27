@@ -4,45 +4,74 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="color-scheme" content="light dark" />
-  <title>Báo cáo – QL Số HĐ & TL</title>
+  <title>BÁO CÁO – QL HĐ & TL VPĐK LONG KHÁNH</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-  <style>
-    :root{ --bg:#f6f7fb; --text:#0f172a; --muted:#475569; --line:#e2e8f0; --primary:#2563eb; --card:#fff; --tap:44px }
-    html,body{ background:var(--bg); color:var(--text) }
-    .flat{ border:1px solid var(--line); border-radius:14px; background:var(--card) }
-    input,select,button{ min-height:var(--tap) }
-    .btn{ border:1px solid var(--line); border-radius:12px; padding:.55rem 1rem; font-weight:600; background:#fff }
-    .btn-primary{ background:var(--primary); color:#fff; border-color:var(--primary) }
-    .btn-ghost{ background:#f8fafc }
-    .kpi .label{ color:var(--muted); font-size:12px }
+
+  <!-- THEME -->
+  <style id="vpdk-theme">
+    :root{
+      --vpdk-bg:#f7f8fb; --vpdk-card:#ffffff; --vpdk-line:#e5e7eb;
+      --vpdk-text:#0f172a; --vpdk-muted:#475569;
+      --vpdk-primary:#2563eb; --vpdk-warn:#d97706; --vpdk-danger:#dc2626;
+      --vpdk-neutral:#64748b; --vpdk-focus:#93c5fd;
+    }
+    @media (prefers-color-scheme: dark){
+      :root{
+        --vpdk-bg:#0b1020; --vpdk-card:#0f172a; --vpdk-line:#1f2937;
+        --vpdk-text:#e5e7eb; --vpdk-muted:#94a3b8;
+      }
+    }
+    html,body{ background:var(--vpdk-bg); color:var(--vpdk-text) }
+    .flat{ background:var(--vpdk-card); border:1px solid var(--vpdk-line); border-radius:14px }
+    input,select,button{ min-height:44px }
+    input.flat,select.flat{ padding:.6rem .8rem }
+    .btn{ appearance:none; user-select:none; border-radius:12px; border:1px solid var(--vpdk-line);
+          padding:.6rem 1rem; font-weight:700; transition:.15s; display:inline-flex; gap:.5rem; align-items:center }
+    .btn:hover{ transform:translateY(-1px) }
+    .btn:active{ transform:translateY(0) }
+    .btn:focus-visible{ outline:3px solid var(--vpdk-focus); outline-offset:2px }
+    .btn-primary{ background:var(--vpdk-primary); color:#fff; border-color:var(--vpdk-primary) }
+    .btn-neutral{ background:#f1f5f9; color:#0f172a; border-color:var(--vpdk-line) }
+    .kpi .label{ color:var(--vpdk-muted); font-size:12px }
     .kpi .val{ font-size:1.6rem; font-weight:800 }
-    .chip{ display:inline-flex; align-items:center; gap:.4rem; padding:.3rem .6rem; border:1px solid var(--line); border-radius:999px; background:#f1f5f9; color:#334155; font-size:.9rem }
+    .chip{ display:inline-flex; align-items:center; gap:.4rem; padding:.3rem .6rem; border:1px solid var(--vpdk-line); border-radius:999px; background:#f1f5f9; color:#334155; font-size:.9rem }
     .chart-box{ height:320px }
     @media (max-width: 640px){ html{ font-size:15px } .chart-box{ height:260px } }
+
+    /* Header vàng 3D nền xanh */
+    .header-title {
+      font-size: 1.3rem;
+      font-weight: 900;
+      color: #FFD700;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.4), 0 0 8px #fff59d;
+    }
+    .header-bar {
+      background: linear-gradient(90deg, #38bdf8, #0ea5e9);
+      padding: 1rem;
+      text-align: center;
+    }
+    .btn-nav{border-radius:8px; padding:.35rem .8rem; font-weight:700; border:1px solid #cbd5e1; background:#f1f5f9; color:#0f172a;}
   </style>
 </head>
 <body>
-  <header class="border-b" style="border-color:#e2e8f0;background:#fff;">
-    <div class="max-w-6xl mx-auto px-3 py-3 flex items-center gap-3">
-      <div class="flex-1 flex items-center gap-3">
-        <span class="text-lg md:text-xl font-bold">Báo cáo – QL Số HĐ & TL</span>
-        <nav class="hidden sm:flex gap-3 text-[15px]">
-          <a class="underline-offset-4 hover:underline" href="./index.html">Trang chính</a>
-          <span class="chip">Chỉ dành cho admin / report_admin</span>
-        </nav>
+  <!-- HEADER mới -->
+  <header class="header-bar">
+    <div class="flex flex-col items-center gap-2">
+      <div class="flex items-center justify-center gap-2">
+        <span class="text-2xl">📊</span>
+        <span class="header-title">BÁO CÁO HỢP ĐỒNG & THANH LÝ VPĐK LONG KHÁNH</span>
       </div>
-      <div class="flex items-center gap-2">
-        <input id="email" class="hidden sm:block flat px-3 py-2 w-64" placeholder="email" autocomplete="username" />
-        <input id="password" type="password" class="hidden sm:block flat px-3 py-2 w-48" placeholder="mật khẩu" autocomplete="current-password" />
-        <button id="btnLogin" class="btn btn-primary">Đăng nhập</button>
-        <button id="btnLogout" class="btn btn-ghost">Đăng xuất</button>
-      </div>
+      <nav class="flex gap-3">
+        <a href="index.html" class="btn-nav">Trang chính</a>
+        <a href="reports.html" class="btn-nav">Trang báo cáo</a>
+      </nav>
     </div>
   </header>
 
   <main class="max-w-6xl mx-auto px-3 py-6">
+    <!-- Filters -->
     <section class="flat p-4">
       <div class="grid grid-cols-2 sm:grid-cols-6 gap-3">
         <div><label class="text-sm text-slate-600">Từ ngày</label><input id="from" type="date" class="flat px-3 py-2 w-full"/></div>
@@ -62,11 +91,12 @@
         </div>
         <div class="flex items-end gap-2">
           <button id="btnRun" class="btn btn-primary">Chạy báo cáo</button>
-          <button id="btnExport" class="btn">Xuất Excel</button>
+          <button id="btnExport" class="btn btn-neutral">Xuất Excel</button>
         </div>
       </div>
     </section>
 
+    <!-- KPIs -->
     <section class="grid md:grid-cols-6 gap-3 mt-4">
       <div class="flat p-4 kpi"><div class="label">Tổng Hợp đồng</div><div id="kpiHD" class="val">–</div></div>
       <div class="flat p-4 kpi"><div class="label">Tổng Thanh lý</div><div id="kpiTL" class="val">–</div></div>
@@ -76,6 +106,7 @@
       <div class="flat p-4 kpi"><div class="label">Huỷ (HĐ / TL)</div><div class="val"><span id="kpiVoidHD">–</span> / <span id="kpiVoidTL">–</span></div></div>
     </section>
 
+    <!-- Trend -->
     <section class="grid gap-3 mt-4">
       <div class="flat p-4">
         <div class="flex items-center justify-between mb-2">
@@ -86,6 +117,7 @@
       </div>
     </section>
 
+    <!-- Distribution -->
     <section class="grid md:grid-cols-2 gap-3 mt-4">
       <div class="flat p-4">
         <h3 class="font-semibold mb-2">Phân bố HĐ theo phường</h3>
@@ -97,6 +129,7 @@
       </div>
     </section>
 
+    <!-- Table -->
     <section class="flat p-4 mt-4">
       <h3 class="font-semibold mb-2">Bảng tổng hợp theo kỳ</h3>
       <div class="overflow-x-auto">
@@ -107,6 +140,19 @@
       </div>
     </section>
   </main>
+
+  <!-- FOOTER mới -->
+  <footer class="bg-slate-100 text-slate-700 text-sm mt-6 py-4 px-4">
+    <div class="max-w-6xl mx-auto space-y-2 text-center leading-relaxed">
+      <p><b>Miễn trừ trách nhiệm:</b> Phần mềm này chỉ phục vụ mục đích quản lý nội bộ VPĐKLK.
+         Chúng tôi không chịu trách nhiệm pháp lý cho việc sử dụng sai mục đích.</p>
+      <p>Mọi góp ý xin gửi về 📧 
+         <a href="mailto:phamhung16490@gmail.com" class="text-blue-600 underline">phamhung16490@gmail.com</a></p>
+      <p><b>Văn phòng Đăng ký Đất đai chi nhánh Long Khánh</b><br/>
+         Địa chỉ: Đường CMT8, Phường Long Khánh, tỉnh Đồng Nai</p>
+      <p class="text-xs">© 2025 VPĐKLK. All rights reserved.</p>
+    </div>
+  </footer>
 
   <div id="toast" class="fixed bottom-4 right-4 hidden text-white px-4 py-3 rounded-lg" style="background:#0f172a"></div>
 
@@ -120,7 +166,7 @@
       </div>
       <div class="mt-4 flex justify-end gap-2">
         <button type="button" id="btnCloseLogin" class="btn btn-ghost">Huỷ</button>
-        <button type="submit" id="btnDoLogin" class="btn btn-primary">Đăng nhập</button>
+        <button type="submit" id="btnDoLogin" class="btn btn-primary"><span class="ic">🔐</span>Đăng nhập</button>
       </div>
     </form>
   </dialog>
@@ -138,7 +184,7 @@
 
     async function guardReports(){
       const s=await getSession();
-      if (!s) return; // sẽ đăng nhập ở dưới
+      if (!s){ return; } // nếu chưa đăng nhập, cho hiện modal khi chạy báo cáo
       const email=(s.user.email||'').toLowerCase();
       const role=await fetchRole();
       const allowed=(role==='admin'||role==='report_admin'|| email==='admin@vp.local'||email==='admin1@vp.local');
@@ -153,7 +199,7 @@
     }
     guardReports();
 
-    // Login
+    // Modal login
     const dlg=gi('loginDialog'), emailModal=gi('emailModal'), passwordModal=gi('passwordModal');
     const openLoginDialog=()=>{ if(!dlg.open) dlg.showModal(); setTimeout(()=>emailModal.focus(),30); };
     const closeLoginDialog=()=>{ if(dlg.open) dlg.close(); };
@@ -165,17 +211,6 @@
       closeLoginDialog(); toast("Đăng nhập thành công");
       await runReport();
     });
-    gi('btnLogin').onclick=async ()=>{
-      const desktop=window.matchMedia('(min-width:640px)').matches;
-      if(desktop){
-        const email=gi('email').value.trim(), password=gi('password').value;
-        if(!email||!password){ openLoginDialog(); return; }
-        const { error } = await sb.auth.signInWithPassword({ email, password });
-        if(error){ alert(error.message); return; }
-        await runReport();
-      } else openLoginDialog();
-    };
-    gi('btnLogout').onclick=async()=>{ await sb.auth.signOut(); toast("Đã đăng xuất"); };
 
     function fmtKey(d, grain){
       const dt=new Date(d);
@@ -208,6 +243,7 @@
       const [{data:hd, error:e1},{data:tl, error:e2}] = await Promise.all([qHD,qTL]);
       if (e1||e2){ alert((e1||e2).message); return; }
 
+      // KPIs
       const totalHD=hd.length, totalTL=tl.length;
       const voidHD=hd.filter(r=>String(r.status).toLowerCase()==='void').length;
       const voidTL=tl.filter(r=>String(r.status).toLowerCase()==='void').length;
@@ -218,6 +254,7 @@
       gi('kpiTLavg').textContent=(totalTL/days).toFixed(2);
       gi('kpiVoidHD').textContent=voidHD; gi('kpiVoidTL').textContent=voidTL;
 
+      // Xu hướng
       const agg=new Map();
       for(const r of hd){ const k=fmtKey(r.issued_date,grain); agg.set(k,{key:k,hd:(agg.get(k)?.hd||0)+1,tl:agg.get(k)?.tl||0}); }
       for(const r of tl){ const k=fmtKey(r.terminated_date,grain); agg.set(k,{key:k,hd:agg.get(k)?.hd||0,tl:(agg.get(k)?.tl||0)+1}); }
@@ -236,6 +273,7 @@
           plugins:{ legend:{ position:'top' } }, scales:{ y:{ beginAtZero:true, precision:0 } } }
       });
 
+      // Phân bố theo phường
       const wards=['LK','HG','BL','BV','XL'];
       const cntHD=new Map(wards.map(w=>[w,0])), cntTL=new Map(wards.map(w=>[w,0]));
       hd.forEach(r=> cntHD.set(r.ward,(cntHD.get(r.ward)||0)+1));
@@ -248,9 +286,11 @@
       charts.wardTL=new Chart(gi('chartWardTL'),{ type:'doughnut', data:{ labels:wLabels, datasets:[{ data:wTL }] },
         options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ position:'right' } } }});
 
+      // Bảng
       const tbody=gi('reportBody'); tbody.innerHTML='';
       rows.forEach(r=>{ const tr=document.createElement('tr'); tr.innerHTML=`<td class="p-2">${r.key}</td><td class="p-2">${r.hd}</td><td class="p-2">${r.tl}</td>`; tbody.appendChild(tr); });
 
+      // Lưu để export
       window.__reportRows=rows; window.__reportMeta={from,to,ward,grain,generatedAt:new Date().toISOString()};
     }
 
@@ -261,11 +301,11 @@
       XLSX.utils.book_append_sheet(wb,ws,"BaoCao"); XLSX.writeFile(wb,"BaoCao_HD_TL.xlsx");
     }
 
-    gi('btnRun').onclick=runReport;
-    gi('btnExport').onclick=exportExcel;
+    document.getElementById('btnRun').onclick=runReport;
+    document.getElementById('btnExport').onclick=exportExcel;
 
     const today=new Date(); const y0=new Date(today.getFullYear(),0,1).toISOString().slice(0,10);
-    gi('from').value=y0; gi('to').value(today.toISOString().slice(0,10));
+    document.getElementById('from').value=y0; document.getElementById('to').value(today.toISOString().slice(0,10));
   </script>
 </body>
 </html>
