@@ -280,7 +280,7 @@
     gi('btnExport').onclick=exportExcel;
 
     const today=new Date(); const y0=new Date(today.getFullYear(),0,1).toISOString().slice(0,10);
-    gi('from').value=y0; gi('to').value=today.toISOString().slice(0,10);
+    gi('from').value=y0; gi('to').value(today.toISOString().slice(0,10));
   </script>
 </body>
 </html>
