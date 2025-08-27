@@ -16,9 +16,9 @@
     .btn-warn{ background:var(--warn); color:#fff; border-color:var(--warn) }
     .btn-ghost{ background:#f8fafc }
     .btn-sm{ padding:.35rem .7rem; font-size:.92rem }
-    .badge{display:inline-block;padding:.2rem .5rem;border-radius:8px;font-weight:700;border:1px solid var(--line)}
+    .badge{display:inline-block;padding:.18rem .55rem;border-radius:8px;font-weight:700;border:1px solid var(--line)}
     .badge-hd{ background:#e0eaff; color:#1d4ed8 }
-    .badge-tl{ background:#fff2e0; color:#a45403 }
+    .badge-tl{ background:#fff1e6; color:#a45303 }
     .badge-void{ background:#ffe0e0; color:#b91c1c; text-decoration:line-through; text-decoration-thickness:2px; border-color:#fecaca }
     .table{width:100%} .table th,.table td{ padding:.6rem; border-bottom:1px solid var(--line); vertical-align:top }
     .pill{ display:inline-flex; align-items:center; gap:.4rem; padding:.3rem .7rem; border:1px solid var(--line); border-radius:999px; font-size:.9rem; background:#f1f5f9; color:#334155 }
@@ -116,7 +116,7 @@
 
   <div id="toast" class="fixed bottom-4 right-4 hidden text-white px-4 py-3 rounded-lg" style="background:#0f172a"></div>
 
-  <!-- Login Modal -->
+  <!-- Login Modal (mobile + desktop khi thiếu input) -->
   <dialog id="loginDialog" class="rounded-xl p-0 w-[92vw] max-w-md">
     <form id="loginForm" method="dialog" class="p-5">
       <h3 class="text-lg font-semibold mb-3">Đăng nhập</h3>
@@ -134,7 +134,7 @@
   <script type="module">
     import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
     const SUPABASE_URL = "https://nefjhmhzfuuwxxhhjaei.supabase.co";
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5lZmpobWh6ZnV1d3h4aGhqYWVpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTYxMTI3MzQsImV4cCI6MjA3MTY4ODczNH0.2vT6kw0uvSTr49cGLSrsZbT6qtPJ_mYzXsu7PGJpGrY";  /* ← dán ANON KEY */
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5lZmpobWh6ZnV1d3h4aGhqYWVpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTYxMTI3MzQsImV4cCI6MjA3MTY4ODczNH0.2vT6kw0uvSTr49cGLSrsZbT6qtPJ_mYzXsu7PGJpGrY";  /* ← dán ANON KEY tại đây */
     const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     const gi = (id)=>document.getElementById(id);
@@ -142,7 +142,7 @@
     const getSession = async()=> (await sb.auth.getSession()).data.session;
     const isVoid = (st)=> (st||'').toLowerCase()==='void';
 
-    // Lấy role từ app_role (RPC get_my_role)
+    // Lấy role (RPC get_my_role)
     async function fetchRole(){
       const { data, error } = await sb.rpc('get_my_role');
       if (error){ console.error(error); return ''; }
@@ -185,7 +185,7 @@
         const desktop = window.matchMedia('(min-width: 640px)').matches;
         if (desktop){
           const email = gi('email').value.trim(), password = gi('password').value;
-          if(!email||!password){ alert("Nhập email/mật khẩu"); return; }
+          if(!email||!password){ openLoginDialog(); return; }
           const { error } = await sb.auth.signInWithPassword({ email, password });
           if (error){ alert(error.message); return; }
           toast("Đăng nhập thành công"); await refreshWho(); await loadContracts();
@@ -194,15 +194,24 @@
     });
     document.querySelectorAll('#btnLogout').forEach(btn=> btn.addEventListener('click', async()=>{ await sb.auth.signOut(); await refreshWho(); }));
 
-    // Cấp số HĐ (RPC GLOBAL)
+    // Cấp số HĐ (RPC GLOBAL) – đã xử lý trường hợp trả về mảng/đối tượng
     const issueHd = async()=>{
       const s=await getSession(); if(!s){ openLoginDialog(); return; }
       try{
-        const payload={ p_ward:gi('ward').value, p_owner_name:gi('owner').value, p_sheet_no:+gi('sheet').value||null, p_parcel_no:+gi('parcel').value||null, p_request_id:crypto.randomUUID(), p_note:gi('note').value||null };
+        const payload={
+          p_ward:gi('ward').value,
+          p_owner_name:gi('owner').value,
+          p_sheet_no:+gi('sheet').value||null,
+          p_parcel_no:+gi('parcel').value||null,
+          p_request_id:crypto.randomUUID(),
+          p_note:gi('note').value||null
+        };
         const { data, error } = await sb.rpc('issue_contract_global', payload);
         if (error) throw error;
-        gi('hdResult').innerHTML = `<span class="badge badge-hd">${data.contract_no}</span>`;
-        toast("Đã cấp: " + data.contract_no); await loadContracts();
+        const row = Array.isArray(data) ? data[0] : data;
+        const cno = row?.contract_no || '(không lấy được số)';
+        gi('hdResult').innerHTML = `<span class="badge badge-hd">${cno}</span>`;
+        toast("Đã cấp: " + cno); await loadContracts();
       }catch(e){ console.error(e); alert("Lỗi: "+(e.message||e)); }
     };
     gi('btnIssueHD').onclick = issueHd;
@@ -292,7 +301,9 @@
               el.disabled=true; el.textContent='Đang cấp...';
               const { data, error } = await sb.rpc('issue_termination_global',{ p_ward:w, p_contract_no:contractNo, p_request_id:crypto.randomUUID(), p_note:null });
               if (error) throw error;
-              toast("Đã cấp TL: "+data.termination_no); await loadContracts();
+              const row = Array.isArray(data) ? data[0] : data;
+              const tno = row?.termination_no || '(không lấy được số)';
+              toast("Đã cấp TL: "+tno); await loadContracts();
             }
             if (act==='void-tl'){
               const tlNo=el.getAttribute('data-no');
