@@ -81,7 +81,7 @@
       </div>
     </section>
 
-    <!-- Charts row 1: Trend -->
+    <!-- Trend -->
     <section class="grid gap-3 mt-4">
       <div class="flat p-4">
         <div class="flex items-center justify-between mb-2">
@@ -92,14 +92,14 @@
       </div>
     </section>
 
-    <!-- Charts row 2: Distribution by ward -->
+    <!-- Distribution -->
     <section class="grid md:grid-cols-2 gap-3 mt-4">
       <div class="flat p-4">
-        <h3 class="font-semibold mb-2">Phân bố Hợp đồng theo phường</h3>
+        <h3 class="font-semibold mb-2">Phân bố HĐ theo phường</h3>
         <div class="chart-box"><canvas id="chartWardHD"></canvas></div>
       </div>
       <div class="flat p-4">
-        <h3 class="font-semibold mb-2">Phân bố Thanh lý theo phường</h3>
+        <h3 class="font-semibold mb-2">Phân bố TL theo phường</h3>
         <div class="chart-box"><canvas id="chartWardTL"></canvas></div>
       </div>
     </section>
@@ -116,7 +116,6 @@
     </section>
   </main>
 
-  <!-- Toast -->
   <div id="toast" class="fixed bottom-4 right-4 hidden text-white px-4 py-3 rounded-lg" style="background:#0f172a"></div>
 
   <!-- Login Modal -->
@@ -147,7 +146,7 @@
 
     async function guardReports(){
       const s=await getSession();
-      if (!s) return; // đăng nhập ở dưới
+      if (!s) return; // sẽ đăng nhập ở dưới
       const email=(s.user.email||'').toLowerCase();
       const role=await fetchRole();
       const allowed=(role==='admin'||role==='report_admin'|| email==='admin@vp.local'||email==='admin1@vp.local');
@@ -178,7 +177,7 @@
       const desktop=window.matchMedia('(min-width:640px)').matches;
       if(desktop){
         const email=gi('email').value.trim(), password=gi('password').value;
-        if(!email||!password){ alert("Chưa nhập email/mật khẩu"); return; }
+        if(!email||!password){ openLoginDialog(); return; }
         const { error } = await sb.auth.signInWithPassword({ email, password });
         if(error){ alert(error.message); return; }
         await runReport();
