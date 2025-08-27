@@ -4,55 +4,90 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="color-scheme" content="light dark" />
-  <title>QL Số HĐ & TL – VPĐKLK</title>
+  <title>PHẦN MỀM QL HĐ & TL – VPĐK LONG KHÁNH</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    :root{ --bg:#f6f7fb; --text:#0f172a; --muted:#475569; --line:#e2e8f0; --primary:#2563eb; --warn:#d97706; --card:#fff; --tap:44px }
-    html,body{ background:var(--bg); color:var(--text) }
-    input,select,button{ min-height:var(--tap) }
-    .flat{ border:1px solid var(--line); border-radius:12px; background:var(--card) }
-    .btn{ border:1px solid var(--line); border-radius:10px; padding:.55rem 1rem; font-weight:600; background:#fff }
-    .btn-primary{ background:var(--primary); color:#fff; border-color:var(--primary) }
-    .btn-warn{ background:var(--warn); color:#fff; border-color:var(--warn) }
-    .btn-ghost{ background:#f8fafc }
-    .btn-sm{ padding:.35rem .7rem; font-size:.92rem }
-    .badge{display:inline-block;padding:.18rem .55rem;border-radius:8px;font-weight:700;border:1px solid var(--line)}
-    .badge-hd{ background:#e0eaff; color:#1d4ed8 }
-    .badge-tl{ background:#fff1e6; color:#a45303 }
-    .badge-void{ background:#ffe0e0; color:#b91c1c; text-decoration:line-through; text-decoration-thickness:2px; border-color:#fecaca }
-    .table{width:100%} .table th,.table td{ padding:.6rem; border-bottom:1px solid var(--line); vertical-align:top }
-    .pill{ display:inline-flex; align-items:center; gap:.4rem; padding:.3rem .7rem; border:1px solid var(--line); border-radius:999px; font-size:.9rem; background:#f1f5f9; color:#334155 }
-    .card-row{ border:1px solid var(--line); border-radius:12px; background:#fff; padding:.9rem }
+
+  <!-- THEME: Flat Design + Colors -->
+  <style id="vpdk-theme">
+    :root{
+      --vpdk-bg:#f7f8fb; --vpdk-card:#ffffff; --vpdk-line:#e5e7eb;
+      --vpdk-text:#0f172a; --vpdk-muted:#475569;
+      --vpdk-primary:#2563eb; /* HĐ */
+      --vpdk-warn:#d97706;    /* TL */
+      --vpdk-danger:#dc2626;  /* Huỷ/Xoá */
+      --vpdk-neutral:#64748b; /* Tải lại/Phụ */
+      --vpdk-focus:#93c5fd;
+    }
+    @media (prefers-color-scheme: dark){
+      :root{
+        --vpdk-bg:#0b1020; --vpdk-card:#0f172a; --vpdk-line:#1f2937;
+        --vpdk-text:#e5e7eb; --vpdk-muted:#94a3b8;
+      }
+    }
+    html,body{ background:var(--vpdk-bg); color:var(--vpdk-text) }
+    .flat{ background:var(--vpdk-card); border:1px solid var(--vpdk-line); border-radius:14px }
+    input,select,button{ min-height:44px }
+    input.flat,select.flat{ padding:.6rem .8rem }
+    .btn{ appearance:none; user-select:none; border-radius:12px; border:1px solid var(--vpdk-line);
+          padding:.6rem 1rem; font-weight:700; transition:.15s; display:inline-flex; gap:.5rem; align-items:center }
+    .btn:hover{ transform:translateY(-1px) }
+    .btn:active{ transform:translateY(0) }
+    .btn:focus-visible{ outline:3px solid var(--vpdk-focus); outline-offset:2px }
+    .btn-sm{ padding:.4rem .75rem; font-weight:600; border-radius:10px }
+    .btn-block{ width:100% }
+    .btn-primary{ background:var(--vpdk-primary); color:#fff; border-color:var(--vpdk-primary) }
+    .btn-warn{ background:var(--vpdk-warn); color:#fff; border-color:var(--vpdk-warn) }
+    .btn-danger{ background:var(--vpdk-danger); color:#fff; border-color:var(--vpdk-danger) }
+    .btn-neutral{ background:#f1f5f9; color:#0f172a; border-color:var(--vpdk-line) }
+    .btn-ghost{ background:#f8fafc; color:#0f172a }
+    .btn[disabled]{ opacity:.55; cursor:not-allowed; transform:none }
+    .badge{ display:inline-flex; align-items:center; gap:.4rem; padding:.25rem .6rem;
+            border-radius:10px; border:1px solid var(--vpdk-line); font-weight:800; letter-spacing:.2px }
+    .badge-hd{ background:#e0eaff; color:#1d4ed8; border-color:#bfdbfe }
+    .badge-tl{ background:#fff1e6; color:#a45303; border-color:#fed7aa }
+    .badge-void{ background:#ffe0e0; color:#b91c1c; border-color:#fecaca;
+                 text-decoration:line-through; text-decoration-thickness:2px }
+    .table{ width:100% }
+    .table th,.table td{ border-bottom:1px solid var(--vpdk-line); padding:.65rem .6rem; vertical-align:top }
+    .pill{ display:inline-flex; align-items:center; gap:.4rem; padding:.3rem .7rem; border:1px solid var(--vpdk-line); border-radius:999px; font-size:.9rem; background:#f1f5f9; color:#334155 }
+    .card-row{ border:1px solid var(--vpdk-line); border-radius:12px; background:#fff; padding:.9rem }
     .card-row h4{ font-weight:700; margin:0 0 .35rem }
     .card-row .meta{ font-size:.92rem; color:#475569; display:flex; flex-wrap:wrap; gap:.45rem .8rem }
     .card-row .actions{ margin-top:.6rem; display:flex; flex-wrap:wrap; gap:.4rem }
+    .ic{ font-size:1.05em; line-height:1 }
     @media (max-width:640px){
       html{ font-size:15px }
       .sticky-actions{ position:sticky; bottom:0; left:0; right:0; background:#ffffffee; backdrop-filter:blur(6px);
-        border-top:1px solid var(--line); padding:.6rem; display:flex; gap:.5rem; z-index:30 }
+        border-top:1px solid var(--vpdk-line); padding:.6rem; display:flex; gap:.5rem; z-index:30 }
     }
+
+    /* Header vàng 3D nền xanh */
+    .header-title {
+      font-size: 1.3rem;
+      font-weight: 900;
+      color: #FFD700;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.4), 0 0 8px #fff59d;
+    }
+    .header-bar {
+      background: linear-gradient(90deg, #38bdf8, #0ea5e9);
+      padding: 1rem;
+      text-align: center;
+    }
+    .btn-nav{border-radius:8px; padding:.35rem .8rem; font-weight:700; border:1px solid #cbd5e1; background:#f1f5f9; color:#0f172a;}
   </style>
 </head>
 <body>
-  <header class="border-b" style="border-color:var(--line);background:#fff;">
-    <div class="max-w-6xl mx-auto px-3 py-3 flex items-center gap-3">
-      <div class="flex-1 flex items-center gap-4">
-        <span class="text-lg md:text-xl font-bold">QL Số HĐ & TL – VPĐKLK</span>
-        <nav class="hidden sm:flex gap-3 text-[15px]">
-          <a class="pill hover:underline" href="./index.html">Trang chính</a>
-          <a id="reportsLink" class="pill hover:underline" href="./reports.html" style="display:none">Báo cáo</a>
-        </nav>
+  <!-- HEADER mới -->
+  <header class="header-bar">
+    <div class="flex flex-col items-center gap-2">
+      <div class="flex items-center justify-center gap-2">
+        <span class="text-2xl">📑</span>
+        <span class="header-title">PHẦN MỀM QUẢN LÝ HỢP ĐỒNG & THANH LÝ VPĐK LONG KHÁNH</span>
       </div>
-      <div class="hidden sm:flex items-center gap-2">
-        <input id="email" class="flat px-3 py-2 w-64" placeholder="email (vd: user1@vp.local)" autocomplete="username" />
-        <input id="password" type="password" class="flat px-3 py-2 w-48" placeholder="mật khẩu" autocomplete="current-password" />
-        <button id="btnLogin" class="btn btn-primary">Đăng nhập</button>
-        <button id="btnLogout" class="btn btn-ghost">Đăng xuất</button>
-      </div>
-      <div class="sm:hidden flex gap-2">
-        <button id="btnLogin" class="btn btn-primary">Đăng nhập</button>
-        <button id="btnLogout" class="btn btn-ghost">Đăng xuất</button>
-      </div>
+      <nav class="flex gap-3">
+        <a href="index.html" class="btn-nav">Trang chính</a>
+        <a id="reportsLink" href="reports.html" class="btn-nav">Trang báo cáo</a>
+      </nav>
     </div>
   </header>
 
@@ -74,12 +109,12 @@
           <label class="text-sm text-slate-600">Tên chủ đất</label>
           <input id="owner" class="flat px-3 py-2 w-full" placeholder="Nguyễn Văn A" autocomplete="name" />
         </div>
-        <div><label class="text-sm text-slate-600">Số tờ</label><input id="sheet" type="number" class="flat px-3 py-2 w-full" /></div>
-        <div><label class="text-sm text-slate-600">Số thửa</label><input id="parcel" type="number" class="flat px-3 py-2 w-full" /></div>
+        <div><label class="text-sm text-slate-600">Số tờ</label><input id="sheet" type="number" inputmode="numeric" pattern="[0-9]*" class="flat px-3 py-2 w-full" /></div>
+        <div><label class="text-sm text-slate-600">Số thửa</label><input id="parcel" type="number" inputmode="numeric" pattern="[0-9]*" class="flat px-3 py-2 w-full" /></div>
         <div class="sm:col-span-2 col-span-2"><label class="text-sm text-slate-600">Ghi chú</label><input id="note" class="flat px-3 py-2 w-full" /></div>
       </div>
       <div class="mt-3 flex gap-2 items-center">
-        <button id="btnIssueHD" class="btn btn-primary">Cấp số HĐ</button>
+        <button id="btnIssueHD" class="btn btn-primary"><span class="ic">📄</span>Cấp số HĐ</button>
         <div id="hdResult" class="text-lg"></div>
       </div>
     </section>
@@ -91,7 +126,7 @@
           <select id="filterWard" class="flat px-2 py-2">
             <option value="">Tất cả phường</option><option>LK</option><option>HG</option><option>BL</option><option>BV</option><option>XL</option>
           </select>
-          <button id="btnReload" class="btn">Tải lại</button>
+          <button id="btnReload" class="btn btn-neutral">Tải lại</button>
         </div>
       </div>
       <div class="mt-3 overflow-x-auto hidden sm:block">
@@ -109,10 +144,23 @@
     </section>
 
     <div class="sticky-actions sm:hidden">
-      <button id="btnIssueHD_mobile" class="btn btn-primary flex-1">Cấp số HĐ</button>
-      <button id="btnReload_mobile" class="btn">Tải lại</button>
+      <button id="btnIssueHD_mobile" class="btn btn-primary btn-block"><span class="ic">📄</span>Cấp số HĐ</button>
+      <button id="btnReload_mobile" class="btn btn-neutral btn-block">Tải lại</button>
     </div>
   </main>
+
+  <!-- FOOTER mới -->
+  <footer class="bg-slate-100 text-slate-700 text-sm mt-6 py-4 px-4">
+    <div class="max-w-6xl mx-auto space-y-2 text-center leading-relaxed">
+      <p><b>Miễn trừ trách nhiệm:</b> Phần mềm này chỉ phục vụ mục đích quản lý nội bộ VPĐKLK.
+         Chúng tôi không chịu trách nhiệm pháp lý cho việc sử dụng sai mục đích.</p>
+      <p>Mọi góp ý xin gửi về 📧 
+         <a href="mailto:phamhung16490@gmail.com" class="text-blue-600 underline">phamhung16490@gmail.com</a></p>
+      <p><b>Văn phòng Đăng ký Đất đai chi nhánh Long Khánh</b><br/>
+         Địa chỉ: Đường CMT8, Phường Long Khánh, tỉnh Đồng Nai</p>
+      <p class="text-xs">© 2025 VPĐKLK. All rights reserved.</p>
+    </div>
+  </footer>
 
   <div id="toast" class="fixed bottom-4 right-4 hidden text-white px-4 py-3 rounded-lg" style="background:#0f172a"></div>
 
@@ -126,7 +174,7 @@
       </div>
       <div class="mt-4 flex justify-end gap-2">
         <button type="button" id="btnCloseLogin" class="btn btn-ghost">Huỷ</button>
-        <button type="submit" id="btnDoLogin" class="btn btn-primary">Đăng nhập</button>
+        <button type="submit" id="btnDoLogin" class="btn btn-primary"><span class="ic">🔐</span>Đăng nhập</button>
       </div>
     </form>
   </dialog>
@@ -154,15 +202,16 @@
       const reportsLink = document.getElementById('reportsLink');
       if (!session){
         gi('who').textContent="Chưa đăng nhập"; gi('role').textContent="–"; gi('session').textContent="–";
-        if (reportsLink) reportsLink.style.display='none'; return;
+        if (reportsLink) reportsLink.style.display=''; // vẫn hiện link; quyền sẽ check trong reports.html
+        return;
       }
       const email = (session.user.email || '').toLowerCase();
       const role  = await fetchRole();
       gi('who').textContent = session.user.email || '';
       gi('role').textContent = role || '(chưa gán)';
       gi('session').textContent = session.access_token.slice(0,12)+"…";
-      const showReports = (role==='admin'||role==='report_admin'|| email==='admin@vp.local'||email==='admin1@vp.local');
-      if (reportsLink) reportsLink.style.display = showReports ? '' : 'none';
+      // vẫn cho thấy link, còn hạn chế truy cập nằm ở reports.html
+      if (reportsLink) reportsLink.style.display = '';
     }
 
     // Modal login
@@ -177,22 +226,10 @@
       closeLoginDialog(); toast("Đăng nhập thành công"); await refreshWho(); await loadContracts();
     });
 
-    // Header login
-    document.querySelectorAll('#btnLogin').forEach(btn=>{
-      btn.addEventListener('click', async ()=>{
-        const desktop = window.matchMedia('(min-width: 640px)').matches;
-        if (desktop){
-          const email = gi('email').value.trim(), password = gi('password').value;
-          if(!email||!password){ openLoginDialog(); return; }
-          const { error } = await sb.auth.signInWithPassword({ email, password });
-          if (error){ alert(error.message); return; }
-          toast("Đăng nhập thành công"); await refreshWho(); await loadContracts();
-        } else openLoginDialog();
-      });
-    });
+    // Header login buttons (chúng ta dùng modal nên không có input ở header mới)
     document.querySelectorAll('#btnLogout').forEach(btn=> btn.addEventListener('click', async()=>{ await sb.auth.signOut(); await refreshWho(); }));
 
-    // ====== Cấp số HĐ: ĐÃ CÓ fallback ======
+    // ====== Cấp số HĐ: với fallback ======
     const issueHd = async()=>{
       const s=await getSession(); if(!s){ openLoginDialog(); return; }
       try{
@@ -211,8 +248,7 @@
         let cno = row?.contract_no;
 
         if (!cno){
-          const { data: last } = await sb.from('contract')
-            .select('contract_no').order('id',{ascending:false}).limit(1);
+          const { data: last } = await sb.from('contract').select('contract_no').order('id',{ascending:false}).limit(1);
           cno = last?.[0]?.contract_no || '(không lấy được số)';
         }
 
@@ -242,6 +278,7 @@
         for (const t of tls) tlMap.set(t.contract_id, t.termination_no);
       }
 
+      // Desktop
       const tbody=gi('contractsBody'); tbody.innerHTML='';
       for (const r of contracts){
         const tlNo=tlMap.get(r.id);
@@ -251,15 +288,15 @@
         } else {
           if (tlNo){
             actions.push(`<span class="badge badge-tl">${tlNo}</span>`);
-            actions.push(`<button class="btn btn-ghost btn-sm" data-act="void-tl" data-no="${tlNo}">Huỷ TL</button>`);
-            if (role==='admin') actions.push(`<button class="btn btn-ghost btn-sm" data-act="del-tl" data-no="${tlNo}">Xoá TL</button>`);
+            actions.push(`<button class="btn btn-danger btn-sm" data-act="void-tl" data-no="${tlNo}"><span class="ic">⛔</span>Huỷ TL</button>`);
+            if (role==='admin') actions.push(`<button class="btn btn-danger btn-sm" data-act="del-tl" data-no="${tlNo}">Xoá TL</button>`);
           } else {
-            actions.push(`<button class="btn btn-warn btn-sm" data-act="issue-tl" data-no="${r.contract_no}" data-ward="${r.ward}">Cấp TL</button>`);
+            actions.push(`<button class="btn btn-warn btn-sm" data-act="issue-tl" data-no="${r.contract_no}" data-ward="${r.ward}"><span class="ic">✅</span>Cấp TL</button>`);
           }
-          actions.push(`<button class="btn btn-ghost btn-sm" data-act="void-hd" data-no="${r.contract_no}">Huỷ HĐ</button>`);
-          if (role==='admin') actions.push(`<button class="btn btn-ghost btn-sm" data-act="del-hd" data-no="${r.contract_no}">Xoá HĐ</button>`);
+          actions.push(`<button class="btn btn-danger btn-sm" data-act="void-hd" data-no="${r.contract_no}"><span class="ic">⛔</span>Huỷ HĐ</button>`);
+          if (role==='admin') actions.push(`<button class="btn btn-danger btn-sm" data-act="del-hd" data-no="${r.contract_no}">Xoá HĐ</button>`);
         }
-        const statusLabel = vnContractStatus(r, tlMap);
+        const statusLabel = isVoid(r.status) ? 'Đã huỷ' : (tlMap.has(r.id) ? 'Hoàn thành' : 'Chưa thanh lý');
         const tr=document.createElement('tr');
         tr.innerHTML=`
           <td><span class="badge ${isVoid(r.status)?'badge-void':'badge-hd'}">${r.contract_no}</span></td>
@@ -269,20 +306,21 @@
         tbody.appendChild(tr);
       }
 
+      // Mobile
       const cards=gi('contractsCards'); cards.innerHTML='';
       for (const r of contracts){
         const tlNo=tlMap.get(r.id);
-        const statusLabel = vnContractStatus(r, tlMap);
+        const statusLabel = isVoid(r.status) ? 'Đã huỷ' : (tlMap.has(r.id) ? 'Hoàn thành' : 'Chưa thanh lý');
         const card=document.createElement('div'); card.className='card-row';
         const hdBadge=`<span class="badge ${isVoid(r.status)?'badge-void':'badge-hd'}">${r.contract_no}</span>`;
         const tlPart = isVoid(r.status) ? '<span class="text-slate-400">—</span>' :
           (tlNo ? `<span class="badge badge-tl">${tlNo}</span>
-                   <button class="btn btn-ghost btn-sm" data-act="void-tl" data-no="${tlNo}">Huỷ TL</button>
-                   ${role==='admin'?`<button class="btn btn-ghost btn-sm" data-act="del-tl" data-no="${tlNo}">Xoá TL</button>`:''}`
-               : `<button class="btn btn-warn btn-sm" data-act="issue-tl" data-no="${r.contract_no}" data-ward="${r.ward}">Cấp TL</button>`);
+                   <button class="btn btn-danger btn-sm" data-act="void-tl" data-no="${tlNo}"><span class="ic">⛔</span>Huỷ TL</button>
+                   ${role==='admin'?`<button class="btn btn-danger btn-sm" data-act="del-tl" data-no="${tlNo}">Xoá TL</button>`:''}`
+               : `<button class="btn btn-warn btn-sm" data-act="issue-tl" data-no="${r.contract_no}" data-ward="${r.ward}"><span class="ic">✅</span>Cấp TL</button>`);
         const hdActions = !isVoid(r.status) ? `
-          <button class="btn btn-ghost btn-sm" data-act="void-hd" data-no="${r.contract_no}">Huỷ HĐ</button>
-          ${role==='admin'?`<button class="btn btn-ghost btn-sm" data-act="del-hd" data-no="${r.contract_no}">Xoá HĐ</button>`:''}` : '';
+          <button class="btn btn-danger btn-sm" data-act="void-hd" data-no="${r.contract_no}"><span class="ic">⛔</span>Huỷ HĐ</button>
+          ${role==='admin'?`<button class="btn btn-danger btn-sm" data-act="del-hd" data-no="${r.contract_no}">Xoá HĐ</button>`:''}` : '';
         card.innerHTML = `
           <h4>${hdBadge}</h4>
           <div class="meta">
@@ -296,6 +334,7 @@
         cards.appendChild(card);
       }
 
+      // Attach actions
       const attach=(root)=> root.querySelectorAll('button[data-act]').forEach(btn=>{
         btn.addEventListener('click', async (ev)=>{
           const el=ev.currentTarget, act=el.getAttribute('data-act');
