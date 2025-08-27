@@ -43,7 +43,6 @@
   </header>
 
   <main class="max-w-6xl mx-auto px-3 py-6">
-    <!-- Filters -->
     <section class="flat p-4">
       <div class="grid grid-cols-2 sm:grid-cols-6 gap-3">
         <div><label class="text-sm text-slate-600">Từ ngày</label><input id="from" type="date" class="flat px-3 py-2 w-full"/></div>
@@ -68,20 +67,15 @@
       </div>
     </section>
 
-    <!-- KPIs -->
     <section class="grid md:grid-cols-6 gap-3 mt-4">
       <div class="flat p-4 kpi"><div class="label">Tổng Hợp đồng</div><div id="kpiHD" class="val">–</div></div>
       <div class="flat p-4 kpi"><div class="label">Tổng Thanh lý</div><div id="kpiTL" class="val">–</div></div>
       <div class="flat p-4 kpi"><div class="label">% HĐ đã TL</div><div id="kpiRate" class="val">–</div></div>
       <div class="flat p-4 kpi"><div class="label">HĐ / ngày (TB)</div><div id="kpiHDavg" class="val">–</div></div>
       <div class="flat p-4 kpi"><div class="label">TL / ngày (TB)</div><div id="kpiTLavg" class="val">–</div></div>
-      <div class="flat p-4 kpi">
-        <div class="label">Huỷ (HĐ / TL)</div>
-        <div class="val"><span id="kpiVoidHD">–</span> / <span id="kpiVoidTL">–</span></div>
-      </div>
+      <div class="flat p-4 kpi"><div class="label">Huỷ (HĐ / TL)</div><div class="val"><span id="kpiVoidHD">–</span> / <span id="kpiVoidTL">–</span></div></div>
     </section>
 
-    <!-- Trend -->
     <section class="grid gap-3 mt-4">
       <div class="flat p-4">
         <div class="flex items-center justify-between mb-2">
@@ -92,7 +86,6 @@
       </div>
     </section>
 
-    <!-- Distribution -->
     <section class="grid md:grid-cols-2 gap-3 mt-4">
       <div class="flat p-4">
         <h3 class="font-semibold mb-2">Phân bố HĐ theo phường</h3>
@@ -104,7 +97,6 @@
       </div>
     </section>
 
-    <!-- Table -->
     <section class="flat p-4 mt-4">
       <h3 class="font-semibold mb-2">Bảng tổng hợp theo kỳ</h3>
       <div class="overflow-x-auto">
@@ -136,7 +128,7 @@
   <script type="module">
     import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
     const SUPABASE_URL="https://nefjhmhzfuuwxxhhjaei.supabase.co";
-    const SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5lZmpobWh6ZnV1d3h4aGhqYWVpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTYxMTI3MzQsImV4cCI6MjA3MTY4ODczNH0.2vT6kw0uvSTr49cGLSrsZbT6qtPJ_mYzXsu7PGJpGrY"; /* ← dán ANON KEY */
+    const SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5lZmpobWh6ZnV1d3h4aGhqYWVpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTYxMTI3MzQsImV4cCI6MjA3MTY4ODczNH0.2vT6kw0uvSTr49cGLSrsZbT6qtPJ_mYzXsu7PGJpGrY";
     const sb=createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
     const gi=id=>document.getElementById(id);
     const toast=(m)=>{ const t=gi('toast'); t.textContent=m; t.classList.remove('hidden'); setTimeout(()=>t.classList.add('hidden'),2000); };
@@ -185,7 +177,6 @@
     };
     gi('btnLogout').onclick=async()=>{ await sb.auth.signOut(); toast("Đã đăng xuất"); };
 
-    // Helpers
     function fmtKey(d, grain){
       const dt=new Date(d);
       if (grain==='year')  return String(dt.getFullYear());
@@ -217,7 +208,6 @@
       const [{data:hd, error:e1},{data:tl, error:e2}] = await Promise.all([qHD,qTL]);
       if (e1||e2){ alert((e1||e2).message); return; }
 
-      // KPIs
       const totalHD=hd.length, totalTL=tl.length;
       const voidHD=hd.filter(r=>String(r.status).toLowerCase()==='void').length;
       const voidTL=tl.filter(r=>String(r.status).toLowerCase()==='void').length;
@@ -228,7 +218,6 @@
       gi('kpiTLavg').textContent=(totalTL/days).toFixed(2);
       gi('kpiVoidHD').textContent=voidHD; gi('kpiVoidTL').textContent=voidTL;
 
-      // Xu hướng
       const agg=new Map();
       for(const r of hd){ const k=fmtKey(r.issued_date,grain); agg.set(k,{key:k,hd:(agg.get(k)?.hd||0)+1,tl:agg.get(k)?.tl||0}); }
       for(const r of tl){ const k=fmtKey(r.terminated_date,grain); agg.set(k,{key:k,hd:agg.get(k)?.hd||0,tl:(agg.get(k)?.tl||0)+1}); }
@@ -247,7 +236,6 @@
           plugins:{ legend:{ position:'top' } }, scales:{ y:{ beginAtZero:true, precision:0 } } }
       });
 
-      // Phân bố theo phường
       const wards=['LK','HG','BL','BV','XL'];
       const cntHD=new Map(wards.map(w=>[w,0])), cntTL=new Map(wards.map(w=>[w,0]));
       hd.forEach(r=> cntHD.set(r.ward,(cntHD.get(r.ward)||0)+1));
@@ -260,11 +248,9 @@
       charts.wardTL=new Chart(gi('chartWardTL'),{ type:'doughnut', data:{ labels:wLabels, datasets:[{ data:wTL }] },
         options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ position:'right' } } }});
 
-      // Bảng
       const tbody=gi('reportBody'); tbody.innerHTML='';
       rows.forEach(r=>{ const tr=document.createElement('tr'); tr.innerHTML=`<td class="p-2">${r.key}</td><td class="p-2">${r.hd}</td><td class="p-2">${r.tl}</td>`; tbody.appendChild(tr); });
 
-      // Lưu để export
       window.__reportRows=rows; window.__reportMeta={from,to,ward,grain,generatedAt:new Date().toISOString()};
     }
 
